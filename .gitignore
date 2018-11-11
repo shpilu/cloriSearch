@@ -1,0 +1,7 @@
+*.swp
+*.so*
+*.o
+*.diff
+*lockfile
+*.out
+**tags

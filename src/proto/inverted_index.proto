@@ -1,0 +1,128 @@
+//
+// cloriSearch protobuf definition
+// version: 1.0 
+// Copyright (C) 2018 James Wei (weijianlhp@163.com). All rights reserved
+//
+
+syntax="proto2";
+
+message IndexSchema {
+    message Term {
+        required string name = 1;
+        required ValueType type = 2;
+    };
+    repeated Term meta;
+};
+
+// example:
+// case1: 1
+{
+  "city":"beijing",
+  "age":[10,15]
+}
+
+// case 1 is the same as:
+{
+  "mode":"AND",
+  "city":"beijing",
+  "age":[10,15]
+}
+
+// case 2, for short
+{
+    "mode":"short",
+    "city":["beijing", "shanghai"],
+    "device":["ios"],
+    "age":{[10,14],[22, 25]}
+}
+
+// A stanard input
+{
+    "mode":"stanard",
+    "id":2, // docId
+    // boolean expression parser:[ A1 v A2 v A3], where Ax = B1 ^ B2 ^ B3, so result: (B1 ^ B2) v (B1 ^ B3 ^ B4) v (B2 ^ B5)
+    "disjunction":[{
+        "attribute":[{
+            "name":"city",
+            "value":{
+                "sval":["beijing", "shanghai", "shenzhen"]
+            }
+        },{
+            "name":"device",
+            "value":{
+                "sval":["ios"]
+            }
+        },{
+            "name":"net",
+            "value":{
+                "ival":[1]
+            }
+        },{
+            "name":"location",
+            "value":{
+                "geo":{"longitude":36.1213, "latitude":45.31}
+            }
+        },{
+            "name":"age",
+            "value":{
+                "section":[{"left":10,"closed":true, "right":14, "closed":true},{"left":22,"closed":true, "right":25, "closed":true}]
+            }
+        }]
+    }]
+    "value":"dadadadad" // en empty pointer in design
+}
+
+
+message Section {
+    required int64 left = 1;
+    required bool cleft = 2; 
+    required int64 right = 3;
+    required bool cright = 4;
+};
+
+message Geo {
+    required float longitude = 1;
+    required float latitude  = 2;
+};
+
+message AttributeValue {
+    repeated string sval = 1;
+    repeated int64  ival = 2;
+    repeated double dval = 3;
+    repeated Section section = 4;
+    optional Geo geo = 5;
+};
+
+message Attribute {
+    required string name = 1;
+    required AttributeValue value = 2;
+};
+
+message Conjunction {
+    repeated Attribute attribute; 
+};
+
+message DNF {
+    required string id = 1;
+    required string mode = 2;
+    repeated Conjunction disjunction = 3;
+};
+
+// 初始化:
+// 加载indexdef作为全局变量
+
+// 添加索引时传入DNF及一个void*指针指向正排数据
+// 
+
+// LBS how to use ???
+
+// Index builder
+// in init, we init index schema and register indexer
+class IndexerFactory {
+public:
+    virtual RegisterIndexer(const std::string& type_name);
+    Indexer* GetIndexer(const std::string& type_name);
+private:
+    
+};
+

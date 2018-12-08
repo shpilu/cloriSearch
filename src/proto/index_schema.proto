@@ -1,0 +1,45 @@
+// 
+// index schema definition
+// 
+syntax = "proto2";
+
+package cloris;
+
+message IndexSchema {
+    message IndexMeta {
+        required string name = 1;
+        required string value_type = 2; // string, int32, bool, float, geo
+        required string index_type = 3; // general, section, geohash
+    };
+    repeated IndexMeta meta;
+};
+
+// example:
+// {
+//     "meta":[
+//     {
+//         "name":"sex",
+//         "value_type":"string",
+//         "index_type":"general",
+//     },
+//     {
+//         "name":"city",
+//         "value_type":"string",
+//         "index_type":"general",
+//     },
+//     {
+//         "name":"is_wifi",
+//         "value_type":"bool",
+//         "index_type":"general",
+//     },
+//     {
+//         "name":"age",
+//         "value_type":"int32",
+//         "index_type":"section",
+//     },
+//     {
+//         "name":"location",
+//         "value_type":"geo",
+//         "index_type":"geohash",
+//     }
+// ]}

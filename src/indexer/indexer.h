@@ -20,10 +20,6 @@ private:
 
 };
 
-
-
-// Indexer* indexer = IndexerFactory::instance()->CreateIndexer(term.type());
-
 } // namespace cloris
 
 #endif // CLORIS_INDEXER_H_

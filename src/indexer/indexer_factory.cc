@@ -11,11 +11,11 @@ IndexerFactory* IndexerFactory::instance() {
     return singleton<IndexerFactory>();
 }
 
-Indexer* CreateIndexer(const std::string& type, const std::string& value_type) {
+Indexer* CreateIndexer(const std::string& name, const std::string& key_type, const std::string& index_type) {
     if (type == "default") {
-        if (value_type == "int") {
+        if (index_type == "int") {
             returrn new SimpleIndexer<int>();
-        } else if (value_type == "string") {
+        } else if (index_type == "string") {
             return new SimpleIndexer<std::string>();
         }
     } else {

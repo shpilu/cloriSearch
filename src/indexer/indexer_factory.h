@@ -12,7 +12,7 @@ namespace cloris {
 class IndexerFactory {
 public:
     static IndexerFactory* instance();
-    Indexer* CreateIndexer(const std::string& type);
+    Indexer* CreateIndexer(const std::string& name, const std::string& key_type, const std::string& value_type);
 };
 
 // Indexer* indexer = IndexerFactory::instance()->CreateIndexer(term.type());
@@ -20,20 +20,3 @@ public:
 } // namespace cloris
 
 #endif // CLORIS_INDEXER_FACTORY_H_
-
-IndexerFactory* IndexerFactory::instance() {
-    return singleton<IndexerFactory>();
-}
-
-Indexer* CreateIndexer(const std::string& type, const std::string& value_type) {
-    if (type == "default") {
-        if (value_type == "int") {
-            returrn new SimpleIndexer<int>();
-        } else if (value_type == "string") {
-            return new SimpleIndexer<std::string>();
-        }
-    } else {
-        return NULL;
-    }
-}
-

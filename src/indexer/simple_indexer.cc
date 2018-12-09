@@ -7,7 +7,10 @@
 
 namespace cloris {
 
-SimpleIndexer::SimpleIndexer() {
+SimpleIndexer::SimpleIndexer() :
+   name_(name),
+   key_type_(key_type),
+   index_type_(index_type) {
 }
 
 SimpleIndexer::~SimpleIndexer() {

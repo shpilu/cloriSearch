@@ -7,49 +7,35 @@
 #include "internal/json2pb.h"
 #include "clorisearch.h"
 
-class CloriSearch {
-    bool Init(const std::string& schema_filename);
-    bool Load(const std::string& filename);
-    Search(const Query& query, int limit);
-
-    inline InvertedIndex& inverted_index() const { return inverted_index_; }
-    inline ForwardIndex& forward_index() const { return forward_index_; }
-private:
-    InvertedIndex inverted_index_;
-    ForwardIndex forward_index_;
-};
-
 namespace cloris {
 
-// TODO
 CloriSearch::CloriSearch() {
 }
 
-// TODO
 CloriSearch::~CloriSearch() {
 }
 
-bool CloriSearch::Init(const std::string& schema_source, SchemaFormat format, SourceType source_type) {
+bool CloriSearch::Init(const std::string& source, IndexSchemaFormat format, SourceType source_type) {
     if (src_type != DIRECT) {
         cLog(ERROR, "cloriSearch init failed: unsupport src_type");
         return false;
     }
-    if (format != SM_JSON) {
+    if (format != ISF_JSON) {
         cLog(ERROR, "cloriSearch init failed: unsupport format-style schema now");
         return false;
     }
     IndexSchema schema;
     std::string err_msg;
-    if (!json2pb::JsonToProtoMessage(schema_source, &schema, &err_msg)) {
-        cLog(ERROR, "cloriSearch init failed: json2pb error");
+    if (!json2pb::JsonToProtoMessage(source, &schema, &err_msg)) {
+        cLog(ERROR, "cloriSearch init failed: json2pb error=" + err_msg);
         return false;
     }
     // init inverted index schema
-    if (!inverted_index().Init(schema)) {
+    if (!inverted_index()->Init(schema, err_msg)) {
         cLog(ERROR, "cloriSearch init failed: inverted_index init failed");
         return false;
     }
-    if (!forward_index().Init()) {
+    if (!forward_index()->Init()) {
         cLog(ERROR, "cloriSearch init failed: forward_index init failed");
         return false;
     }
@@ -57,8 +43,8 @@ bool CloriSearch::Init(const std::string& schema_source, SchemaFormat format, So
     return true;
 }
 
-bool CloriSearch::Load(const std::string& source, int docid, SchemaFormat format, bool is_incremental) {
-    if (format != SM_JSON) {
+bool CloriSearch::Load(const std::string& source, int docid, IndexSchemaFormat format, bool is_incremental) {
+    if (format != ISF_JSON) {
         cLog(ERROR, "unsupport format-style");
         return false;
     }
@@ -68,12 +54,11 @@ bool CloriSearch::Load(const std::string& source, int docid, SchemaFormat format
         cLog(ERROR, "CloriSearch load failed");
         return false;
     }
-    inverted_index().Add(dnf, docid);
+    inverted_index()->Add(dnf, docid);
 }
 
-
 std::vector<int> CloriSearch::Search(const Query& query, int limit) {
-    return inverted_index().Search(const Query& query, limit);
+    return inverted_index()->Search(query, limit);
 }
 
 } // namespace cloris

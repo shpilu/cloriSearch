@@ -7,6 +7,8 @@
 
 #include "inverted_index.h"
 
+namespace cloris {
+
 InvertedIndex::InvertedIndex() {
 }
 
@@ -14,35 +16,39 @@ InvertedIndex::~InvertedIndex() {
 }
 
 bool InvertedIndex::Init(const IndexSchema& schema, std::string& err_msg) {
-    size_t schema_size(0);        
-    for (auto& term : schema.meta()) {
-        if (schemas_.find(term.name()) == schemas_.end()) {
-            schemas_.insert(term.name());
-            ++schema_size;
+    size_t term_size(0);        
+    for (auto& term : schema.terms()) {
+        if (terms_.find(term.name()) == terms_.end()) {
+            terms_.insert(term.name());
+            ++term_size;
         }
     }
 
-    if (schema_size == 0) {
-        err_msg = "schema's size is zero";
+    if (term_size == 0) {
+        err_msg = "term's size is zero";
         return false;
     }
-    itable_ = malloc(sizeof(IndexerManager) * schema_size);
-    memset(itable_, 0, sizeof(IndexerManager) * schema_size);
+    itable_ = malloc(sizeof(IndexerManager) * term_size);
+    memset(itable_, 0, sizeof(IndexerManager) * term_size);
     if (!itable_) {
-        err_msg = "itable memory malloc failed";
+        err_msg = "itable memory allocation failed";
         return false;
     }
+
     std::set<std::string> tmp_set;
-    for (auto& term : schema.meta()) {
+    // TODO use a better implementation
+    bool is_first_loop = true;
+    for (auto& term : schema.terms()) {
         if (tmp_set.find(term.name()) != tmp_set.end()) {
-            for (int i = 0; i < schema_size; ++i) {
-                if (!itable_[i].second) {
-                    itable_[i].second = new IndexerManager();
+            for (int i = 0; i < term_size; ++i) {
+                if (is_first_loop) {
+                    new(&itable_[i]) IndexerManager();
                 }
-                itable_[i].second->AddTerm(term);
+                itable_[i].DeclareTerm(term);
             }
             tmp_set.insert(term.name());
         }
+        is_first_loop = false;
     }
     return true;
 }
@@ -62,6 +68,15 @@ bool InvertedIndex::Add(const Disjunction& disjunc, int docid, bool is_increment
 }
 
 // TODO
+bool InvertedIndex::Update(DNF *dnf, int docid) {
+    return true;
+}
+
+// TODO
+bool InvertedIndex::Del(int docid) {
+}
+
+// TODO
 std::vector<int> InvertedIndex::Search(Query& query, int limit) {
     std::vector<int> response;
     // clean unexisted key
@@ -72,22 +87,4 @@ std::vector<int> InvertedIndex::Search(Query& query, int limit) {
     return response;
 }
 
-class InvertedIndex {
-public:
-    InvertedIndex();
-    ~InvertedIndex();
-
-    bool Init(IndexSchema* schema);
-    Build();
-    bool Add(DNF *dnf, int docid, bool is_incremental = false);
-    bool Update(DNF *dnf, int docid);
-    bool Del(int docid);
-    std::vector<int> Search(ssmap ss, int limit);
-private:
-    std::set<std::string> schemas_; // age, sex, city...
-    int max_conj_;
-    // 10 mean the max -- is 10
-    IndexerManager *itable_;
-    // TermTable term_[10]; { "sex" -- GeneralIndexer, "age" -- SectionIndexer, "net" -- GeneralIndexer, "location" -- GeoHashIndexer }
-};
-
+} // namespace cloris

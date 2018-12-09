@@ -32,10 +32,13 @@ void ItemListHead::Add(int docid) {
 template <typename T> 
 class SimpleIndexer : public Indexer {
 public:
+    SimpleIndexer(const std::string& name, const std::string& key_type, const std::string& index_type);
     virtual Add(AttributeValue& value, int docid);
 
 private:
+    std::string name_;
     std::string key_type_;
+    std::string index_type_;
     std::unordered_map<T, ItemListHead> lists_;
 };
 

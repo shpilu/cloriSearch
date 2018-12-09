@@ -1,22 +1,23 @@
 // 
 // index schema definition
+// protoc --cpp_out=. *.proto
 // 
 syntax = "proto2";
 
 package cloris;
 
 message IndexSchema {
-    message Index {
+    message Term {
         required string name = 1; // age, sex, id...
         required string key_type = 2; // string, int32, bool, float, geo
         required string index_type = 3; // general, section, geohash
     };
-    repeated Index index = 1;
+    repeated Term terms = 1;
 };
 
 // example:
 // {
-//     "index":[
+//     "terms":[
 //     {
 //         "name":"sex",
 //         "key_type":"string",

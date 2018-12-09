@@ -3,6 +3,7 @@
 // version: 1.0 
 // Copyright (C) 2018 James Wei (weijianlhp@163.com). All rights reserved
 //
+// protoc --cpp_out=. *.proto
 
 syntax="proto2";
 
@@ -74,6 +75,7 @@ message Disjunction {
     repeated Conjunction conjunction = 1; 
 };
 
+// Disjunctive Normal Form
 message DNF {
     required string docid = 1;
     required string mode = 2;

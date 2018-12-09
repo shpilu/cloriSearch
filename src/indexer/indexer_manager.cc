@@ -13,11 +13,11 @@ IndexerManager::IndexerManager() {
 IndexerManager::~IndexerManager() {
 }
 
-bool IndexerManager::AddTerm(Term& term) {
+bool IndexerManager::DeclareTerm(Term& term) {
     if (indexer_table_.find(term.name()) == indexer_table_.end()) {
         return true;
     }
-    Indexer* indexer = IndexerFactory::instance()->CreateIndexer(term.type());
+    Indexer* indexer = IndexerFactory::instance()->CreateIndexer(term.name(), term.key_type(), tem.index_type());
     if (!indexer) {
         cLog(ERROR, "unsupported indexer type");
         return false;

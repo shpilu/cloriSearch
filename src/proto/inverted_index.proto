@@ -9,7 +9,7 @@ syntax="proto2";
 // A stanard DNF input:
 // {
 //     "mode":"stanard",
-//     "id":2, // docId
+//     "docid":2, // docId
 //     // ^ : conjunction
 //     // v : disjunction
 //     // boolean expression parser:[ A1 v A2 v A3], where Ax = B1 ^ B2 ^ B3, so result: (B1 ^ B2) v (B1 ^ B3 ^ B4) v (B2 ^ B5)
@@ -75,7 +75,7 @@ message Disjunction {
 };
 
 message DNF {
-    required string id = 1;
+    required string docid = 1;
     required string mode = 2;
     repeated Disjunction disjunction = 3;
 };

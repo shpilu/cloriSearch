@@ -6,40 +6,40 @@ syntax = "proto2";
 package cloris;
 
 message IndexSchema {
-    message IndexMeta {
-        required string name = 1;
-        required string value_type = 2; // string, int32, bool, float, geo
+    message Index {
+        required string name = 1; // age, sex, id...
+        required string key_type = 2; // string, int32, bool, float, geo
         required string index_type = 3; // general, section, geohash
     };
-    repeated IndexMeta meta;
+    repeated Index index = 1;
 };
 
 // example:
 // {
-//     "meta":[
+//     "index":[
 //     {
 //         "name":"sex",
-//         "value_type":"string",
+//         "key_type":"string",
 //         "index_type":"general",
 //     },
 //     {
 //         "name":"city",
-//         "value_type":"string",
+//         "key_type":"string",
 //         "index_type":"general",
 //     },
 //     {
 //         "name":"is_wifi",
-//         "value_type":"bool",
+//         "key_type":"bool",
 //         "index_type":"general",
 //     },
 //     {
 //         "name":"age",
-//         "value_type":"int32",
+//         "key_type":"int32",
 //         "index_type":"section",
 //     },
 //     {
 //         "name":"location",
-//         "value_type":"geo",
+//         "key_type":"geo",
 //         "index_type":"geohash",
 //     }
 // ]}

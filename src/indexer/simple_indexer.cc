@@ -17,7 +17,7 @@ SimpleIndexer::~SimpleIndexer() {
 }
 
 // std::unordered_map<T, ItemListHead> lists_;
-bool SimpleIndexer::Add(AttributeValue& value, int docid) {
+bool SimpleIndexer::Add(const TermValue& value, int docid) {
 
 }
 

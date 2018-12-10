@@ -20,7 +20,8 @@ public:
     ~InvertedIndex();
 
     bool Init(const IndexSchema& schema, std::string& err_msg);
-    bool Add(DNF *dnf, int docid, bool is_incremental);
+    bool Add(DNF *dnf, bool is_incremental);
+    bool Add(const Disjunction& disjunction, int docid, bool is_incremental);
     bool Update(DNF *dnf, int docid);
     bool Del(int docid);
     std::vector<int> Search(const Query& query, int limit);

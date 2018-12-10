@@ -11,8 +11,9 @@ namespace cloris {
 
 class Indexer {
 public:
-    virtual ~Indexer();
-    virtual Add(AttributeValue& value, int docid);
+    virtual ~Indexer() { }
+    virtual bool Add(const TermValue& value, int docid) { }
+    virtual std::list<int>* GetPostingLists(const TermValue&);
 protected:
     AttributeTyle type_;
 

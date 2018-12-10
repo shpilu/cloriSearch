@@ -53,18 +53,17 @@ bool InvertedIndex::Init(const IndexSchema& schema, std::string& err_msg) {
     return true;
 }
 
-bool InvertedIndex::Add(const DNF& dnf, int docid, bool is_incremental) {
-    for (auto& disjunc : dnf.disjunction()) {
-        this->Add(disjunc, docid, is_incremental);
+bool InvertedIndex::Add(const DNF& dnf, bool is_incremental) {
+    for (auto& disjunction : dnf.disjunctions()) {
+        this->Add(disjunction, dnf.docid, is_incremental);
     } 
     return true;
 }
 
-// treat as a standard Disjunction now
-bool InvertedIndex::Add(const Disjunction& disjunc, int docid, bool is_incremental) {
-    size_t conj = disjunc.attribute().size();
-    IndexerManager& manager = itable_[conj];
-    manager->Add(disjunc, docid);
+bool InvertedIndex::Add(const Disjunction& disjunction, int docid, bool is_incremental) {
+    size_t conj_size = disjunction.conjunction().size();
+    IndexerManager& manager = itable_[conj_size - 1];
+    manager->Add(disjunction, docid);
 }
 
 // TODO
@@ -81,8 +80,11 @@ std::vector<int> InvertedIndex::Search(Query& query, int limit) {
     std::vector<int> response;
     // clean unexisted key
     this->GetStandardQuery(query);
-    for (int i = 0; i < query.size(); ++i) {
-        response += itable_->Search(query, limit);
+    for (size_t i = 0; i < query.size(); ++i) {
+        std::vector<int> tmp_vec = itable_[i].Search(query, limit);
+        for (auto &p : tmp_vec) {
+            response.push_back(*p);
+        }
     }
     return response;
 }

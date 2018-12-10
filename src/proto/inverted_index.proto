@@ -14,8 +14,8 @@ syntax="proto2";
 //     // ^ : conjunction
 //     // v : disjunction
 //     // boolean expression parser:[ A1 v A2 v A3], where Ax = B1 ^ B2 ^ B3, so result: (B1 ^ B2) v (B1 ^ B3 ^ B4) v (B2 ^ B5)
-//     "disjunction":[{
-//         "conjunction":[{
+//     "disjunctions":[{
+//         "conjunctions":[{
 //             "name":"city",
 //             "value":{
 //                 "sval":["beijing", "shanghai", "shenzhen"]
@@ -72,13 +72,13 @@ message Conjunction {
 };
 
 message Disjunction {
-    repeated Conjunction conjunction = 1; 
+    repeated Conjunction conjunctions = 1; 
 };
 
 // Disjunctive Normal Form
 message DNF {
     required string docid = 1;
     required string mode = 2;
-    repeated Disjunction disjunction = 3;
+    repeated Disjunction disjunctions = 3;
 };
 

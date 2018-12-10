@@ -15,26 +15,26 @@ struct ItemListHead {
     void Add(int docid);
 
     int len;
-    std::list<int> list;
+    std::list<int> doc_list;
     // skip_list<int> list;
 };
 
 void ItemListHead::Add(int docid) {
-    auto p = list.begin();
-    for (; p != list.end(); ++p) {
-        if (*p >= docid) {
+    auto iter = doc_list.begin();
+    for (; iter != doc_list.end(); ++iter) {
+        if (*iter >= docid) {
             break;
         }
     }
-    p.insert_front(docid);
+    doc_list.insert(iter, docid);
 }
 
 template <typename T> 
 class SimpleIndexer : public Indexer {
 public:
     SimpleIndexer(const std::string& name, const std::string& key_type, const std::string& index_type);
-    virtual Add(AttributeValue& value, int docid);
-
+    virtual bool Add(const TermValue& value, int docid);
+    virtual std::list<int>* GetPostingLists(const TermValue& val);
 private:
     std::string name_;
     std::string key_type_;
@@ -70,10 +70,21 @@ inline std::string ConvertTo(const AttributeValue& val) {
 }
 
 template <typename T>
-bool SimpleIndexer::Add(AttributeValue& value, int docid) {
+bool SimpleIndexer::Add(const TermValue& value, int docid) {
     T val = ConvertTo<T>(value);
-    if (lists_.find(val ) != lists_.end()) {
-        lists_[val].Add(docid);
+    if (lists_.find(val ) == lists_.end()) {
+        lists_.insert(std::pair<T, ItemListHead>(val, ItemListHead()));
+    }
+    lists_[val].Add(docid);
+}
+
+template <typename T>
+std::list<int>* SimpleIndexer::GetPostingLists(const TermValue& val) {
+    T val = ConvertTo<t>(value);
+    if (lists_.find(val) != lists_.end()) {
+        return &(lists_[val].doc_list);
+    } else {
+        return NULL;
     }
 }
 

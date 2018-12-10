@@ -43,7 +43,7 @@ bool CloriSearch::Init(const std::string& source, IndexSchemaFormat format, Sour
     return true;
 }
 
-bool CloriSearch::Load(const std::string& source, int docid, IndexSchemaFormat format, bool is_incremental) {
+bool CloriSearch::Load(const std::string& source, IndexSchemaFormat format, bool is_incremental) {
     if (format != ISF_JSON) {
         cLog(ERROR, "unsupport format-style");
         return false;
@@ -51,10 +51,10 @@ bool CloriSearch::Load(const std::string& source, int docid, IndexSchemaFormat f
     DNF dnf;
     std::string err_msg;
     if (!json2pb::JsonToProtoMessage(source, &dnf, &err_msg)) {
-        cLog(ERROR, "CloriSearch load failed");
+        cLog(ERROR, "CloriSearch load failed:" + err_msg);
         return false;
     }
-    inverted_index()->Add(dnf, docid);
+    inverted_index()->Add(dnf);
 }
 
 std::vector<int> CloriSearch::Search(const Query& query, int limit) {

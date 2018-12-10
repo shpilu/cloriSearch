@@ -12,8 +12,6 @@
 
 namespace cloris {
 
-CrowdMatchFunc CondMeta::match_crowd = NULL;
-
 CondMeta::CondMeta() : type_(tNone) {
     value_.section_[0] = 0;
     value_.section_[1] = 0;
@@ -86,7 +84,7 @@ void CondMeta::push_string(const std::string& str, ValueType type) {
     type_ = type;
 }
 
-CondMeta& ssmap::operator[](const std::string& key) {
+CondMeta& Query::operator[](const std::string& key) {
     if (map_.find(key) != map_.end()) {
         return map_[key];
     } else {
@@ -98,11 +96,11 @@ CondMeta& ssmap::operator[](const std::string& key) {
 }
 
 // unsafe
-const CondMeta& ssmap::at(const std::string& key) const {
+const CondMeta& Query::at(const std::string& key) const {
     return map_.at(key);
 }
 
-CondMeta& ssmap::operator[](const char* key) {
+CondMeta& Query::operator[](const char* key) {
     if (map_.find(key) != map_.end()) {
         return map_[key];
     } else {
@@ -138,49 +136,7 @@ bool CondMeta::Exists(const std::string& key) const {
     return false;
 }
 
-bool CondMeta::Match(const CondMeta& val) const {
-    bool match = false;
-    if (type_ == tNone) {
-        //match = false;
-    } else if (type_ < tSection) {
-        if (type_ != val.type()) {
-            return false;
-        }
-        if (type_ == tBool) {
-            match = (this->value_.bool_ == val.value().bool_);
-        } else if (type_ == tInt32) {
-            match = (this->value_.int32_ == val.value().int32_);
-        } else if (type_ == tString) {
-            match = (str_value_ == val.str_value());
-        } else {
-        }
-    } else if (type_ == tSection) {
-        if (val.type() != tInt32) {
-            // match = false;
-        } else {
-            int32_t begin = this->value_.section_[0];
-            int32_t end   = this->value_.section_[1];
-            if ((val.value().int32_ >= begin) && (val.value().int32_ <= end)) {
-                match = true;
-            }
-        }
-    } else if ((type_ == tInCrowd || type_ == tExCrowd)) {
-        if ((val.type() == tString) && CondMeta::match_crowd && CondMeta::match_crowd(str_vec_, val.str_value(), type_)) {
-            match = true;
-        }
-    } else if ((type_ == tAntiIncluded|| type_ == tAntiExcluded)) {
-        if ((val.type() == tStringArray) && val.Exists(str_value_)) {
-            match = (type_ == tAntiIncluded); 
-        } else {
-            match = (type_ == tAntiExcluded);
-        }
-    } else {
-        // TODO
-    }
-    return match;
-}
-
-ssmap::ssmap() 
+Query::Query() 
     : priority_(0),
       ecpm_(0.0),
       group_id_("none"),
@@ -188,7 +144,7 @@ ssmap::ssmap()
       value_("") {
 }
 
-ssmap::ssmap(const std::string& group_id) 
+Query::Query(const std::string& group_id) 
     : priority_(0),
       ecpm_(0.0),
       group_id_(group_id),
@@ -196,7 +152,7 @@ ssmap::ssmap(const std::string& group_id)
       value_("") {
 }
 
-ssmap::ssmap(const std::string& group_id, const std::string& id) 
+Query::Query(const std::string& group_id, const std::string& id) 
     : priority_(0),
       ecpm_(0.0),
       group_id_(group_id),
@@ -204,11 +160,11 @@ ssmap::ssmap(const std::string& group_id, const std::string& id)
       value_("") {
 }
 
-bool ssmap::hasKey(const std::string& key) const {
+bool Query::hasKey(const std::string& key) const {
     return (map_.find(key) != map_.end());
 }
 
-bool ssmap::AddMeta(const std::string& key, const std::string& params, ValueType type) {
+bool Query::AddMeta(const std::string& key, const std::string& params, ValueType type) {
     bool ok(false);
     CondMeta meta;
     if (type == tString) {
@@ -221,7 +177,7 @@ bool ssmap::AddMeta(const std::string& key, const std::string& params, ValueType
     return ok;
 }
 
-bool ssmap::Parse(const std::string& cond, const std::string& rule, std::string& err_msg) {
+bool Query::Parse(const std::string& cond, const std::string& rule, std::string& err_msg) {
     Json::Reader reader;
     Json::Value jcond;
     if ((!reader.parse(cond, jcond))) {
@@ -288,12 +244,12 @@ bool ssmap::Parse(const std::string& cond, const std::string& rule, std::string&
         value_    = rule; 
         return true;
     } else {
-        err_msg = "bad ssmap, check group_id/id/priority/rule";
+        err_msg = "bad Query, check group_id/id/priority/rule";
         return false;
     }
 }
 
-std::string ssmap::dumpRule() {
+std::string Query::dumpRule() {
     std::string ret("group_id=" + group_id_);
     for (auto &p : map_) {
         util::kv_pair_append(ret, p.first.c_str(), p.second.toString());
@@ -301,7 +257,7 @@ std::string ssmap::dumpRule() {
     return ret;
 }
 
-bool ssmap::EqualTo(const ssmap& input) {
+bool Query::EqualTo(const Query& input) {
     // std::map<std::string, CondMeta> map_;
     if (rule_num() != input.rule_num()) {
         return false;
@@ -315,41 +271,8 @@ bool ssmap::EqualTo(const ssmap& input) {
     
 }
 
-bool ssmap::hasMeta(const std::string& key, const CondMeta& meta) const {
+bool Query::hasMeta(const std::string& key, const CondMeta& meta) const {
     return (map_.find(key) != map_.end()) && (map_.at(key) == meta);
-}
-
-bool ssmap::Match(const ssmap& input) {
-    for (auto &p : map_) {
-        std::string key(p.first);
-        if (!input.hasKey(key)) {
-            LOG(DEBUG, "key not found, key=" + key + ", id=" + this->id());
-            return false;
-        }
-        CondMeta& meta1 = p.second;
-        const CondMeta& meta2 = input.at(key);
-        if (!meta1.Match(meta2)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool ssmap::Match(const ssmap& input, std::string& err_msg) {
-    for (auto &p : map_) {
-        std::string key(p.first);
-        if (!input.hasKey(key)) {
-            err_msg = "no_key=" + key;
-            return false;
-        }
-        const CondMeta& meta1 = p.second;
-        const CondMeta& meta2 = input.at(key);
-        if (!meta1.Match(meta2)) {
-            err_msg = "input_meta=" + meta2.toString() + ", source=" + meta1.toString();
-            return false;
-        }
-    }
-    return true;
 }
 
 } // namepace cloris

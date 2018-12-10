@@ -38,16 +38,11 @@ union ValueHolder {
     int     section_[2];
 };
 
-typedef std::function<bool(const std::vector<std::string>&, const std::string&, ValueType)> CrowdMatchFunc;
-
 class CondMeta {
-public:
-    static CrowdMatchFunc match_crowd;
 public:
     CondMeta();
     ~CondMeta();
 
-    bool Match(const CondMeta& val) const;
     CondMeta& resolveReference(const char* val);
     CondMeta& operator=(int32_t val);
     CondMeta& operator=(bool val);
@@ -72,23 +67,17 @@ private:
     std::vector<std::string> str_vec_;
 };
 
-class ssmap {
+class Query {
 public:
-    ssmap(); 
-    explicit ssmap(const std::string& group_id);
-    ssmap(const std::string& group_id, const std::string& id);
-    ~ssmap() {}
+    Query(); 
+    virtual ~Query() {}
     
-    CondMeta& operator[](const char* key);
     CondMeta& operator[](const std::string& key);
     const CondMeta& at(const std::string& key) const;
 
-    const std::string group_id() const { return group_id_; }
     const std::string value() const { return value_; }
-    const std::string id() const { return id_; }
     int32_t priority() const { return priority_; }
-    double ecpm() const { return ecpm_; }
-    size_t rule_num() const { return map_.size(); }
+    size_t size() const { return map_.size(); }
 
     bool hasMeta(const std::string& key, const CondMeta& meta) const;
 
@@ -98,34 +87,11 @@ public:
     bool AddMeta(const std::string& key, const std::string& params, ValueType type);
     bool Parse(const std::string& cond, const std::string& rule, std::string& err_msg);
     bool hasKey(const std::string& key) const;
-    bool Match(const ssmap& input);
-    bool Match(const ssmap& input, std::string& err_msg); 
-    bool EqualTo(const ssmap& input);
-    std::string dumpRule();
+    bool EqualTo(const Query& input);
 private:
     std::map<std::string, CondMeta> map_;
     int32_t priority_;
-    double ecpm_;
-    std::string group_id_;
-    std::string id_;
     std::string value_;
-};
-
-struct ssmap_cmp {
-    bool operator ()(ssmap& a, ssmap& b) {
-        if (a.priority() != b.priority()) {
-            return a.priority() < b.priority();
-        } else {
-            return a.ecpm() < b.ecpm();
-        }
-    }
-    bool operator ()(std::shared_ptr<ssmap> a, std::shared_ptr<ssmap> b) {
-        if (a->priority() != b->priority()) {
-            return a->priority() < b->priority();
-        } else {
-            return a->ecpm() < b->ecpm();
-        }
-    }
 };
 
 } // namepsace cloris

@@ -4,6 +4,7 @@
 // Copyright (C) 2018 James Wei (weijianlhp@163.com). All rights reserved
 //
 
+#include "internal/log.h"
 #include "simple_indexer.h"
 
 namespace cloris {
@@ -52,6 +53,7 @@ bool SimpleIndexer::Add(const ConjValue& value, int docid) {
         if (lists_.find(term) == lists_.end()) {
             lists_.insert(std::pair<Term, ItemListHead>(term, ItemListHead()));
         }
+        cLog(DEBUG, "add simple_indexer item:[name=%s, value=%s, docid=%d]", term.name().c_str(), term.value().c_str(), docid);
         lists_[term].Add(docid);
     }
     return true;

@@ -74,11 +74,11 @@ set(TUTORIAL_SOURCES ${PROJECT_SOURCE_DIR}/src/example/tutorial.cc)
 add_executable(tutorial ${TUTORIAL_SOURCES})
 target_link_libraries(tutorial clorisearch-shared protobuf)
 
-file(COPY ${PROJECT_SOURCE_DIR}/bin/
-    DESTINATION ${EXECUTABLE_OUTPUT_PATH})
-
-file(COPY ${PROJECT_SOURCE_DIR}/conf/
-    DESTINATION ${PROJECT_BINARY_DIR}/output/conf)
+# file(COPY ${PROJECT_SOURCE_DIR}/bin/
+#     DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+# 
+# file(COPY ${PROJECT_SOURCE_DIR}/conf/
+#     DESTINATION ${PROJECT_BINARY_DIR}/output/conf)
 
 # file(COPY ${PROJECT_SOURCE_DIR}/src/config.h DESTINATION ${PROJECT_BINARY_DIR}/output/include/) 
 file(COPY ${PROJECT_SOURCE_DIR}/src/internal/

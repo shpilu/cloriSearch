@@ -4,7 +4,7 @@
 // Copyright (C) 2018 James Wei (weijianlhp@163.com). All rights reserved
 //
 #include "internal/log.h"
-#include "internal/json2pb.h"
+#include "json2pb/json2pb.h"
 #include "clorisearch.h"
 
 namespace cloris {
@@ -16,8 +16,8 @@ CloriSearch::~CloriSearch() {
 }
 
 bool CloriSearch::Init(const std::string& source, IndexSchemaFormat format, SourceType source_type) {
-    if (src_type != DIRECT) {
-        cLog(ERROR, "cloriSearch init failed: unsupport src_type");
+    if (source_type != DIRECT) {
+        cLog(ERROR, "cloriSearch init failed: unsupport source_type");
         return false;
     }
     if (format != ISF_JSON) {
@@ -43,7 +43,7 @@ bool CloriSearch::Init(const std::string& source, IndexSchemaFormat format, Sour
     return true;
 }
 
-bool CloriSearch::Load(const std::string& source, IndexSchemaFormat format, bool is_incremental) {
+bool CloriSearch::Add(const std::string& source, IndexSchemaFormat format, bool is_incremental) {
     if (format != ISF_JSON) {
         cLog(ERROR, "unsupport format-style");
         return false;
@@ -54,7 +54,8 @@ bool CloriSearch::Load(const std::string& source, IndexSchemaFormat format, bool
         cLog(ERROR, "CloriSearch load failed:" + err_msg);
         return false;
     }
-    inverted_index()->Add(dnf);
+    inverted_index()->Add(dnf, false);
+    return true;
 }
 
 std::vector<int> CloriSearch::Search(const Query& query, int limit) {

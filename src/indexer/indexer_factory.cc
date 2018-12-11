@@ -3,20 +3,25 @@
 // version: 1.0 
 // Copyright (C) 2018 James Wei (weijianlhp@163.com). All rights reserved
 //
+
+#include "internal/singleton.h"
+#include "simple_indexer.h"
 #include "indexer_factory.h"
 
 namespace cloris {
 
-IndexerFactory* IndexerFactory::instance() {
-    return singleton<IndexerFactory>();
+IndexerFactory* IndexerFactory::instance() noexcept {
+    return Singleton<IndexerFactory>::instance();
 }
 
 Indexer* CreateIndexer(const std::string& name, const std::string& key_type, const std::string& index_type) {
-    if (type == "default") {
-        if (index_type == "int") {
-            returrn new SimpleIndexer<int>();
-        } else if (index_type == "string") {
-            return new SimpleIndexer<std::string>();
+    if (index_type == "simple") {
+        if (key_type == "int32") {
+            return new SimpleIndexer(name, ValueType::INT32);
+        } else if (key_type == "string") {
+            return new SimpleIndexer(name, ValueType::STRING);
+        } else {
+            return NULL;
         }
     } else {
         return NULL;

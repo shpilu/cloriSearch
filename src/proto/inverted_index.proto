@@ -58,17 +58,18 @@ message Geo {
     required float latitude  = 2;
 };
 
-message TermValue {
+message ConjValue {
     repeated string sval = 1;
     repeated int32  ival = 2;
     repeated double dval = 3;
     repeated Section section = 4;
-    optional Geo geo = 5;
+    optional bool   bval = 5;
+    optional Geo geo = 6;
 };
 
 message Conjunction {
     required string name = 1;
-    required TermValue value = 2;
+    required ConjValue value = 2;
 };
 
 message Disjunction {
@@ -77,7 +78,7 @@ message Disjunction {
 
 // Disjunctive Normal Form
 message DNF {
-    required string docid = 1;
+    required int32 docid = 1;
     required string mode = 2;
     repeated Disjunction disjunctions = 3;
 };

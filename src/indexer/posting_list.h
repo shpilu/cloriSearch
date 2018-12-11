@@ -7,17 +7,22 @@
 #ifndef CLORIS_POSTING_LIST_H_
 #define CLORIS_POSTING_LIST_H_
 
+#include <list>
+
 namespace cloris {
 
 class PostingList {
 public:
+    enum {
+        EOL = -1,
+    };
+public:
+
     PostingList(std::list<int>* pl);
     ~PostingList() { }
 
-    static EOL = -1,
-
-    bool operator < (const PostingList& pl); 
-    int CurrentEntry();
+    bool operator < (const PostingList& pl) const ; 
+    int CurrentEntry() const;
     void SkipTo(int docid);
 private:
     std::list<int>* doc_list_;

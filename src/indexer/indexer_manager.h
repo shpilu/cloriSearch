@@ -7,20 +7,25 @@
 #ifndef CLORIS_INDEXER_MANAGER_H_
 #define CLORIS_INDEXER_MANAGER_H_
 
+#include <unordered_map>
+#include "index_schema.pb.h"
+#include "inverted_index.pb.h"
+#include "indexer/conjunction_scorer.h"
+#include "indexer.h"
+#include "query.h"
+
 namespace cloris {
 
-//
 // 一个IndexerManager对象是一个conjunctions=N的集合 
-//
 class IndexerManager {
 public:
     IndexerManager();
     ~IndexerManager();
-    bool DeclareTerm(Term& term);
+    bool DeclareTerm(const IndexSchema_Term& term);
     bool Add(const Conjunction& conjunction, int docid);
     bool Add(const Disjunction& disjunction, int docid);
-    std::vector<int> Search(Query& query, int limit);
-    void GetPostingLists(Query& query, ConjunctionScorer& scorer);
+    std::vector<int> Search(const Query& query, int limit);
+    void GetPostingLists(const Query& query, ConjunctionScorer& scorer);
 private:
     std::unordered_map<std::string, Indexer*> indexer_table_;
     int conjunctions_;

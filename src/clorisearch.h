@@ -26,15 +26,15 @@ enum SourceType {
 
 class CloriSearch {
 public:
-    ClorisSearch();
-    ~ClorisSearch();
+    CloriSearch();
+    ~CloriSearch();
 
     bool Init(const std::string& source, IndexSchemaFormat format, SourceType source_type = DIRECT);
-    bool Load(const std::string& source, int docid, IndexSchemaFormat format, bool is_incremental = false);
+    bool Add(const std::string& source, IndexSchemaFormat format, bool is_incremental = false);
     std::vector<int> Search(const Query& query, int limit = -1);
 
-    inline InvertedIndex* inverted_index() const { return iidx_; }
-    inline ForwardIndex*  forward_index()  const { return fidx_; }
+    inline InvertedIndex* inverted_index() { return &iidx_; }
+    inline ForwardIndex*  forward_index()  { return &fidx_; }
 private:
     InvertedIndex iidx_;
     ForwardIndex fidx_;

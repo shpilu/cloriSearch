@@ -7,15 +7,19 @@
 #ifndef CLORIS_INDEXER_H_
 #define CLORIS_INDEXER_H_
 
+#include <list>
+#include "inverted_index.pb.h"
+#include "term.h"
+
 namespace cloris {
 
 class Indexer {
 public:
     virtual ~Indexer() { }
-    virtual bool Add(const TermValue& value, int docid) { }
-    virtual std::list<int>* GetPostingLists(const TermValue&);
+    virtual bool Add(const ConjValue& value, int docid) = 0;
+    virtual std::list<int>* GetPostingLists(const Term& term) = 0;
 protected:
-    AttributeTyle type_;
+    int type_;
 
 private:
 

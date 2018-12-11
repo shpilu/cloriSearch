@@ -5,6 +5,7 @@
 // Copyright (C) 2018 James Wei (weijianlhp@163.com). All rights reserved
 //
 
+#include "indexer/indexer_manager.h"
 #include "inverted_index.h"
 
 namespace cloris {
@@ -28,8 +29,11 @@ bool InvertedIndex::Init(const IndexSchema& schema, std::string& err_msg) {
         err_msg = "term's size is zero";
         return false;
     }
-    itable_ = malloc(sizeof(IndexerManager) * term_size);
-    memset(itable_, 0, sizeof(IndexerManager) * term_size);
+
+    size_t table_size = term_size + 1;
+
+    itable_ = static_cast<IndexerManager*>(malloc(sizeof(IndexerManager) * table_size));
+    memset(itable_, 0, sizeof(IndexerManager) * table_size);
     if (!itable_) {
         err_msg = "itable memory allocation failed";
         return false;
@@ -40,7 +44,7 @@ bool InvertedIndex::Init(const IndexSchema& schema, std::string& err_msg) {
     bool is_first_loop = true;
     for (auto& term : schema.terms()) {
         if (tmp_set.find(term.name()) != tmp_set.end()) {
-            for (int i = 0; i < term_size; ++i) {
+            for (size_t i = 0; i < table_size; ++i) {
                 if (is_first_loop) {
                     new(&itable_[i]) IndexerManager();
                 }
@@ -55,15 +59,17 @@ bool InvertedIndex::Init(const IndexSchema& schema, std::string& err_msg) {
 
 bool InvertedIndex::Add(const DNF& dnf, bool is_incremental) {
     for (auto& disjunction : dnf.disjunctions()) {
-        this->Add(disjunction, dnf.docid, is_incremental);
+        this->Add(disjunction, dnf.docid(), is_incremental);
     } 
     return true;
 }
 
+// deal with city, device...
 bool InvertedIndex::Add(const Disjunction& disjunction, int docid, bool is_incremental) {
-    size_t conj_size = disjunction.conjunction().size();
-    IndexerManager& manager = itable_[conj_size - 1];
-    manager->Add(disjunction, docid);
+    size_t conj_size = disjunction.conjunctions().size();
+    IndexerManager& manager = itable_[conj_size];
+    manager.Add(disjunction, docid);
+    return true;
 }
 
 // TODO
@@ -73,17 +79,22 @@ bool InvertedIndex::Update(DNF *dnf, int docid) {
 
 // TODO
 bool InvertedIndex::Del(int docid) {
+    return true;
+}
+
+void InvertedIndex::GetStandardQuery(const Query& query) {
+    return ;
 }
 
 // TODO
-std::vector<int> InvertedIndex::Search(Query& query, int limit) {
+std::vector<int> InvertedIndex::Search(const Query& query, int limit) {
     std::vector<int> response;
     // clean unexisted key
     this->GetStandardQuery(query);
-    for (size_t i = 0; i < query.size(); ++i) {
+    for (size_t i = 0; i <= query.size(); ++i) {
         std::vector<int> tmp_vec = itable_[i].Search(query, limit);
         for (auto &p : tmp_vec) {
-            response.push_back(*p);
+            response.push_back(p);
         }
     }
     return response;

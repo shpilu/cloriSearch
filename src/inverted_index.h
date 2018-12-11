@@ -8,11 +8,14 @@
 #ifndef CLORIS_INVERTED_INDEX_H_
 #define CLORIS_INVERTED_INDEX_H_
 
+#include <set>
 #include "index_schema.pb.h"
+#include "inverted_index.pb.h"
+#include "query.h"
 
 namespace cloris {
 
-class DNF;
+class IndexerManager;
 
 class InvertedIndex {
 public:
@@ -20,20 +23,17 @@ public:
     ~InvertedIndex();
 
     bool Init(const IndexSchema& schema, std::string& err_msg);
-    bool Add(DNF *dnf, bool is_incremental);
+    bool Add(const DNF& dnf, bool is_incremental);
     bool Add(const Disjunction& disjunction, int docid, bool is_incremental);
     bool Update(DNF *dnf, int docid);
     bool Del(int docid);
     std::vector<int> Search(const Query& query, int limit);
+    void GetStandardQuery(const Query& query);
 private:
-    vector<std::string> terms_; // age, sex, city...
-    // 10 mean the max -- is 10
-    TermTable* term_;
+    std::set<std::string> terms_; // age, sex, city...
     int max_conj_;
     // 10 mean the max -- is 10
     IndexerManager *itable_;
-
-    // TermTable term_[10]; { "sex" -- GeneralIndexer, "age" -- SectionIndexer, "net" -- GeneralIndexer, "location" -- GeoHashIndexer }
 };
 
 } // namespace cloris

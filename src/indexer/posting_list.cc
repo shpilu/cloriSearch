@@ -12,30 +12,25 @@ PostingList::PostingList(std::list<int>* pl) : doc_list_(pl) {
     iter_ = doc_list_->begin();
 }
 
-bool PostingList::operator < (const PostingList& pl) {
+bool PostingList::operator < (const PostingList& pl) const {
     if (pl.CurrentEntry() == EOL) {
         return true;
     }
     return (this->CurrentEntry() < pl.CurrentEntry());
 }
 
-int PostingList::CurrentEntry() {
-    if (iter_ == doc_list->end()) {
+int PostingList::CurrentEntry() const {
+    if (iter_ == doc_list_->end()) {
         return EOL;
     } else {
         return *iter_;
     }
 }
 
-int PostingList::SkipTo(int docid) {
-    while ((iter_ != doc_list_->end()) && (*iter < docid)) {
+void PostingList::SkipTo(int docid) {
+    while ((iter_ != doc_list_->end()) && (*iter_ < docid)) {
         ++iter_;
     }
-}
-
-void ConjunctionScorer::AddPostingList(std::list<int>* doc_list) {
-    PostingList pl(doc_list_);
-    plists_.push_back(pl);
 }
 
 } // namespace cloris

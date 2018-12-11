@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+includedir=${CMAKE_INSTALL_PREFIX}/include
+libdir=${CMAKE_INSTALL_PREFIX}/lib
+
+Name: clorisearch 
+Description: An ad retireval engine
+Version: @CLORISEARCH_VERSION@
+Cflags: -I${CMAKE_INSTALL_PREFIX}/include
+Libs: -L${CMAKE_INSTALL_PREFIX}/lib -lclorisearch
+Libs.private: @CLORISEARCH_PRIVATE_LIBS@  
+

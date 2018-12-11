@@ -53,6 +53,7 @@ file(GLOB BASIC_SOURCES ${PROJECT_CC_DIR}/*.cc
                         ${PROJECT_INDEXER_DIR}/*.cc
                         ${PROJECT_INTERNAL_DIR}/*.cc
                         ${PROJECT_TPARTY_DIR}/json2pb/*.cc 
+                        ${PROJECT_TPARTY_DIR}/jsoncpp/*.cc 
                         ${PROJECT_TPARTY_DIR}/butil/*.cc
                         ${PROJECT_TPARTY_DIR}/butil/*.cpp
                         ${PROJECT_TPARTY_DIR}/butil/third_party/modp_b64/*.cc
@@ -74,11 +75,11 @@ set(TUTORIAL_SOURCES ${PROJECT_SOURCE_DIR}/src/example/tutorial.cc)
 add_executable(tutorial ${TUTORIAL_SOURCES})
 target_link_libraries(tutorial clorisearch-shared protobuf)
 
-# file(COPY ${PROJECT_SOURCE_DIR}/bin/
-#     DESTINATION ${EXECUTABLE_OUTPUT_PATH})
-# 
-# file(COPY ${PROJECT_SOURCE_DIR}/conf/
-#     DESTINATION ${PROJECT_BINARY_DIR}/output/conf)
+file(COPY ${PROJECT_SOURCE_DIR}/bin/
+    DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+
+file(COPY ${PROJECT_SOURCE_DIR}/conf/
+    DESTINATION ${PROJECT_BINARY_DIR}/output/conf)
 
 # file(COPY ${PROJECT_SOURCE_DIR}/src/config.h DESTINATION ${PROJECT_BINARY_DIR}/output/include/) 
 file(COPY ${PROJECT_SOURCE_DIR}/src/internal/

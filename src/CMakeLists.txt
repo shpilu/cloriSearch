@@ -11,14 +11,6 @@ endif()
 configure_file(${PROJECT_SOURCE_DIR}/cmake/def.h.in ${PROJECT_BINARY_DIR}/output/include/internal/def.h @ONLY)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-# if(ENABLE_JSON)
-#     find_package(RAPIDJSON REQUIRED)
-#     # customize rapidjson search path -DRAPIDJSON_PATH=xxx
-#     if(RAPIDJSON_PATH)
-#         include_directories(${RAPIDJSON_PATH})
-#     endif()
-# endif()
-
 include_directories(${CMAKE_CURRENT_SRC_DIR}
                     ${CMAKE_SOURCE_DIR}/src
                     ${CMAKE_SOURCE_DIR}/src/third_party
@@ -39,10 +31,6 @@ endmacro(use_cxx11)
 set(DYNAMIC_LIB pthread)
 use_cxx11()
 
-# if(ENABLE_JSON)
-#     include_directories(${RAPIDJSON_INCLUDE_PATH})
-# endif()
-
 # for *.so output
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/output/lib)
 # for *.a output
@@ -58,31 +46,18 @@ include(FindProtobuf)
 protobuf_generate_cpp(PROTO_SRC PROTO_HEADER 
         ${PROJECT_CC_DIR}/proto/index_schema.proto
         ${PROJECT_CC_DIR}/proto/inverted_index.proto)
-
+#
+# butil is copyed from brpc, and thanks to Baidu Inc.
+#
 file(GLOB BASIC_SOURCES ${PROJECT_CC_DIR}/*.cc 
                         ${PROJECT_INDEXER_DIR}/*.cc
                         ${PROJECT_INTERNAL_DIR}/*.cc
                         ${PROJECT_TPARTY_DIR}/json2pb/*.cc 
                         ${PROJECT_TPARTY_DIR}/butil/*.cc
                         ${PROJECT_TPARTY_DIR}/butil/*.cpp
-                        ${PROJECT_TPARTY_DIR}/butil/strings/*.cpp
                         ${PROJECT_TPARTY_DIR}/butil/third_party/modp_b64/*.cc
                         )
 set(PACKAGE_SOURCES ${BASIC_SOURCES} ${PROTO_SRC}) 
-#     ${PROTO_SRC}
-#     ${PROJECT_INDEXER_DIR}/conjunction_scorer.cc
-#     ${PROJECT_INDEXER_DIR}/indexer.cc
-#     ${PROJECT_INDEXER_DIR}/indexer_factory.cc
-#     ${PROJECT_INDEXER_DIR}/indexer_manager.cc
-#     ${PROJECT_INDEXER_DIR}/posting_list.cc
-#     ${PROJECT_INDEXER_DIR}/section_indexer.cc
-#     ${PROJECT_INDEXER_DIR}/simple_indexer.cc
-#     ${PROJECT_INTERNAL_DIR}/log.cc
-#     ${PROJECT_TPARTY_DIR}/json2pb/json_to_pb.cc
-#     ${PROJECT_TPARTY_DIR}/json2pb/protobuf_map.cc
-#     ${PROJECT_TPARTY_DIR}/json2pb/encode_decode.cc
-#     ${PROJECT_TPARTY_DIR}/json2pb/pb_to_json.cc
-#     )
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_library(OBJ_LIB OBJECT ${PACKAGE_SOURCES})
@@ -95,9 +70,9 @@ set_target_properties(clorisearch-shared PROPERTIES OUTPUT_NAME clorisearch CLEA
 set_target_properties(clorisearch-static PROPERTIES OUTPUT_NAME clorisearch CLEAN_DIRECT_OUTPUT 1)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/output/bin)
-# set(TUTORIAL_SOURCES ${PROJECT_SOURCE_DIR}/src/example/tutorial.cc)
-# add_executable(tutorial ${TUTORIAL_SOURCES})
-# target_link_libraries(tutorial clorisearch-shared)
+set(TUTORIAL_SOURCES ${PROJECT_SOURCE_DIR}/src/example/tutorial.cc)
+add_executable(tutorial ${TUTORIAL_SOURCES})
+target_link_libraries(tutorial clorisearch-shared protobuf)
 
 file(COPY ${PROJECT_SOURCE_DIR}/bin/
     DESTINATION ${EXECUTABLE_OUTPUT_PATH})

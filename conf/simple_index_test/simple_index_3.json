@@ -1,0 +1,12 @@
+{
+    "mode":"stanard",
+    "docid":3,
+    "disjunctions":[{
+        "conjunctions":[{
+            "name":"city",
+            "value":{
+                "sval":["beijing"]
+            }
+        }]
+    }]
+}

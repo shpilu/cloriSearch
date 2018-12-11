@@ -1,0 +1,17 @@
+{
+    "mode":"stanard",
+    "docid":6,
+    "disjunctions":[{
+        "conjunctions":[{
+            "name":"age",
+            "value":{
+                "ival":[16]
+            }
+        },{
+            "name":"student",
+            "value":{
+                "bval":true
+            }
+        }]
+    }]
+}

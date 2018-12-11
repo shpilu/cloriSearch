@@ -1,0 +1,12 @@
+{
+    "mode":"stanard",
+    "docid":9,
+    "disjunctions":[{
+        "conjunctions":[{
+            "name":"gendor",
+            "value":{
+                "sval":["male"]
+            }
+        }]
+    }]
+}

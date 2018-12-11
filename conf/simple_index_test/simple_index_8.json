@@ -1,0 +1,17 @@
+{
+    "mode":"stanard",
+    "docid":8,
+    "disjunctions":[{
+        "conjunctions":[{
+            "name":"age",
+            "value":{
+                "ival":[16]
+            }
+        },{
+            "name":"gendor",
+            "value":{
+                "sval":["female"]
+            }
+        }]
+    }]
+}

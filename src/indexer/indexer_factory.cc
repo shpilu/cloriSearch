@@ -14,7 +14,7 @@ IndexerFactory* IndexerFactory::instance() noexcept {
     return Singleton<IndexerFactory>::instance();
 }
 
-Indexer* CreateIndexer(const std::string& name, const std::string& key_type, const std::string& index_type) {
+Indexer* IndexerFactory::CreateIndexer(const std::string& name, const std::string& key_type, const std::string& index_type) {
     if (index_type == "simple") {
         if (key_type == "int32") {
             return new SimpleIndexer(name, ValueType::INT32);

@@ -22,8 +22,6 @@ public:
     Indexer* CreateIndexer(const std::string& name, const std::string& key_type, const std::string& value_type);
 };
 
-// Indexer* indexer = IndexerFactory::instance()->CreateIndexer(term.type());
-
 } // namespace cloris
 
 #endif // CLORIS_INDEXER_FACTORY_H_

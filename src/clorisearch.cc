@@ -27,7 +27,7 @@ bool CloriSearch::Init(const std::string& source, IndexSchemaFormat format, Sour
     IndexSchema schema;
     std::string err_msg;
     if (!json2pb::JsonToProtoMessage(source, &schema, &err_msg)) {
-        cLog(ERROR, "cloriSearch init failed: json2pb error=" + err_msg);
+        cLog(ERROR, "cloriSearch init failed: json2pb error=%s", err_msg.c_str());
         return false;
     }
     // init inverted index schema
@@ -51,7 +51,7 @@ bool CloriSearch::Add(const std::string& source, IndexSchemaFormat format, bool 
     DNF dnf;
     std::string err_msg;
     if (!json2pb::JsonToProtoMessage(source, &dnf, &err_msg)) {
-        cLog(ERROR, "CloriSearch load failed:" + err_msg);
+        cLog(ERROR, "CloriSearch load failed:%s", err_msg.c_str());
         return false;
     }
     inverted_index()->Add(dnf, false);

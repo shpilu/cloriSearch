@@ -10,14 +10,14 @@
 
 namespace cloris {
 
-IndexerManager::IndexerManager() {
+IndexerManager::IndexerManager(size_t conj) : conjunctions_(conj) {
 }
 
 IndexerManager::~IndexerManager() {
 }
 
 bool IndexerManager::DeclareTerm(const IndexSchema_Term& term) {
-    if (indexer_table_.find(term.name()) == indexer_table_.end()) {
+    if (indexer_table_.find(term.name()) != indexer_table_.end()) {
         return true;
     }
     Indexer* indexer = IndexerFactory::instance()->CreateIndexer(term.name(), term.key_type(), term.index_type());
@@ -30,7 +30,13 @@ bool IndexerManager::DeclareTerm(const IndexSchema_Term& term) {
 }
 
 bool IndexerManager::Add(const Conjunction& conjunction, int docid) {
-    return indexer_table_[conjunction.name()]->Add(conjunction.value(), docid);
+    if (indexer_table_.find(conjunction.name()) == indexer_table_.end()) {
+        cLog(ERROR, "unsupported term:%s", conjunction.name().c_str());
+        return false;
+    } else {
+        cLog(INFO, "add term to indexer[%s], conjunctions=%d", conjunction.name().c_str(), conjunctions_);
+        return indexer_table_[conjunction.name()]->Add(conjunction.value(), docid);
+    }
 }
 
 bool IndexerManager::Add(const Disjunction& disjunction, int docid) {
@@ -40,12 +46,16 @@ bool IndexerManager::Add(const Disjunction& disjunction, int docid) {
     return true;
 }
 
+// 
 void IndexerManager::GetPostingLists(const Query& query, ConjunctionScorer& scorer) {
     for (auto& term : query) {
         if (indexer_table_.find(term.name()) != indexer_table_.end()) {
             std::list<int>* doc_list = indexer_table_[term.name()]->GetPostingLists(term);
             if (doc_list) {
                 scorer.AddPostingList(doc_list);
+                cLog(INFO, "GetPostingLists, [conjs=%d, name=%s, value=%s, found", conjunctions_, term.name().c_str(), term.value().c_str());
+            } else {
+                cLog(INFO, "GetPostingLists, [conjs=%d, name=%s, value=%s, NOT found", conjunctions_, term.name().c_str(), term.value().c_str());
             }
         }
     }

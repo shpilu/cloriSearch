@@ -19,7 +19,7 @@ namespace cloris {
 // 一个IndexerManager对象是一个conjunctions=N的集合 
 class IndexerManager {
 public:
-    IndexerManager();
+    IndexerManager(size_t conj);
     ~IndexerManager();
     bool DeclareTerm(const IndexSchema_Term& term);
     bool Add(const Conjunction& conjunction, int docid);
@@ -28,7 +28,7 @@ public:
     void GetPostingLists(const Query& query, ConjunctionScorer& scorer);
 private:
     std::unordered_map<std::string, Indexer*> indexer_table_;
-    int conjunctions_;
+    size_t conjunctions_;
 };
 
 } // namespace cloris

@@ -14,7 +14,7 @@
 
 namespace cloris {
 
-static LogLevel g_log_level = LogLevel::INFO;
+static LogLevel g_log_level = LogLevel::DEBUG;
 
 void FormatOutput(const char *category, LogLevel level, const char *file_name, int line_num, const char *format, ...) {
     if (level < g_log_level) {

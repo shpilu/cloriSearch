@@ -10,6 +10,8 @@
 #define BUG_ON(args) 
 #define BUG(args)
 
+#include "internal/def.h"
+
 #ifdef USE_DEBUG 
     #define cLog(level, format, ...) \
         FormatOutput("CLORIS", level, __FILE__, __LINE__, format, ##__VA_ARGS__)

@@ -28,13 +28,11 @@ public:
     Term(const std::string&, const std::string&);
     ~Term() { }
 
-    // TODO use template
     Term& operator=(int32_t val);
     Term& operator=(bool val);
     Term& operator=(const char* val);
     Term& operator=(const std::string& val);
     bool operator==(const Term& t) const;
-    // explicit Term& operator=(int32_t val[2]);
 
     ValueType type() const { return type_; }
     const std::string& name() const { return name_; }
@@ -43,7 +41,6 @@ public:
 private:
     Term() = delete;
     ValueType type_;
-    // all data type is stored in value_
     std::string name_;
     std::string value_;
 };

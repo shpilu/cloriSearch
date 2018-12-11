@@ -3,10 +3,6 @@
 // version: 1.0 
 // Copyright (C) 2018 James Wei (weijianlhp@163.com). All rights reserved
 //
-// #include <string.h>
-// #include "json/json.h"
-// #include "utils/olog.h"
-// #include "utils/str_util.h"
 
 #include "query.h"
 

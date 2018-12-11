@@ -8,14 +8,6 @@
 #ifndef CLORIS_SSMAP_H_
 #define CLORIS_SSMAP_H_
 
-// #include <set>
-// #include <map>
-// #include <vector>
-// #include <queue>
-// #include <memory>
-// #include <functional>
-// #include <boost/noncopyable.hpp>
-
 #include <map>
 #include "term.h"
 #include "internal/generic_iterator.h"

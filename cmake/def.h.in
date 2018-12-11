@@ -1,6 +1,6 @@
 #ifndef CLORIS_CLORISEARCH_DEF_H_
 #define CLORIS_CLORISEARCH_DEF_H_ 
 
-// #cmakedefine ENABLE_JSON
+#cmakedefine USE_DEBUG
 
 #endif // CLORIS_CLORISEARCH_DEF_H_ 

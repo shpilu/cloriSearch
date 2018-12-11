@@ -31,12 +31,13 @@ public:
     // TODO use template
     Term& operator=(int32_t val);
     Term& operator=(bool val);
+    Term& operator=(const char* val);
     Term& operator=(const std::string& val);
     bool operator==(const Term& t) const;
     // explicit Term& operator=(int32_t val[2]);
 
     ValueType type() const { return type_; }
-    const std::string& name() const { return value_; }
+    const std::string& name() const { return name_; }
     const std::string& value() const { return value_; }
 
 private:

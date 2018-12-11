@@ -35,7 +35,7 @@ public:
     virtual ~Query() {}
     
     Term& operator[](const std::string& key);
-    const Term& at(const std::string& key) const;
+    Term& at(const std::string& key);
 
     size_t size() const { return terms_.size(); }
 private:

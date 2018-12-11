@@ -50,6 +50,13 @@ Term& Term::operator=(bool val) {
     return *this;
 }
 
+// NOTE:
+Term& Term::operator=(const char* val) {
+    value_.assign(val);
+    type_ = ValueType::STRING;
+    return *this;
+}
+
 Term& Term::operator=(const std::string& val) {
     value_.assign(val);
     type_ = ValueType::STRING;

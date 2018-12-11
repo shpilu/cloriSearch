@@ -5,6 +5,7 @@
 // Copyright (C) 2018 James Wei (weijianlhp@163.com). All rights reserved
 //
 
+#include "internal/log.h"
 #include "indexer/indexer_manager.h"
 #include "inverted_index.h"
 
@@ -40,14 +41,17 @@ bool InvertedIndex::Init(const IndexSchema& schema, std::string& err_msg) {
     }
 
     std::set<std::string> tmp_set;
+
     // TODO use a better implementation
     bool is_first_loop = true;
     for (auto& term : schema.terms()) {
-        if (tmp_set.find(term.name()) != tmp_set.end()) {
+        if (tmp_set.find(term.name()) == tmp_set.end()) {
             for (size_t i = 0; i < table_size; ++i) {
                 if (is_first_loop) {
-                    new(&itable_[i]) IndexerManager();
+                    
+                    new(&itable_[i]) IndexerManager(i);
                 }
+                cLog(DEBUG, "declare term: %s, index=%d", term.name().c_str(), i);
                 itable_[i].DeclareTerm(term);
             }
             tmp_set.insert(term.name());
@@ -91,7 +95,7 @@ std::vector<int> InvertedIndex::Search(const Query& query, int limit) {
     std::vector<int> response;
     // clean unexisted key
     this->GetStandardQuery(query);
-    for (size_t i = 0; i <= query.size(); ++i) {
+    for (int i = static_cast<int>(query.size()); i >= 0; --i) {
         std::vector<int> tmp_vec = itable_[i].Search(query, limit);
         for (auto &p : tmp_vec) {
             response.push_back(p);

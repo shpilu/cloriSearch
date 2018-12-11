@@ -18,13 +18,12 @@ Term& Query::operator[](const std::string& key) {
     } else {
         Term term(key);
         terms_.insert(std::pair<std::string, Term>(key, term));
-        Term& val = terms_.at(key); 
-        return val;
+        return terms_.at(key); 
     }
 }
 
 // unsafe
-const Term& Query::at(const std::string& key) const {
+Term& Query::at(const std::string& key) {
     return terms_.at(key);
 }
 

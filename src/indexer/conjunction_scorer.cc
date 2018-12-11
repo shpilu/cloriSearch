@@ -26,28 +26,28 @@ std::vector<int> ConjunctionScorer::GetMatchedDocid(size_t k) {
     int next_id;
     while (plists_[k - 1].CurrentEntry() != PostingList::EOL) {
         std::sort(plists_.begin(), plists_.end());
-    } 
-    if (plists_[0].CurrentEntry() == plists_[k - 1].CurrentEntry()) {
-        // TODO support NOT IN
-        next_id = plists_[k - 1].CurrentEntry() + 1;
-        if (false) {
-        } else {
-            ret.push_back(plists_[k - 1].CurrentEntry());
-            // K=2, 2,2,2,2
-            for (size_t L = k; L < plists_.size(); ++L) {
-                if (plists_[L].CurrentEntry() < next_id) {
-                    plists_[L].SkipTo(next_id);
-                } else {
-                    break;
+        if (plists_[0].CurrentEntry() == plists_[k - 1].CurrentEntry()) {
+            // TODO support NOT IN
+            next_id = plists_[k - 1].CurrentEntry() + 1;
+            if (false) {
+            } else {
+                ret.push_back(plists_[k - 1].CurrentEntry());
+                // K=2,2,2,2,2
+                for (size_t L = k; L < plists_.size(); ++L) {
+                    if (plists_[L].CurrentEntry() < next_id) {
+                        plists_[L].SkipTo(next_id);
+                    } else {
+                        break;
+                    }
                 }
             }
+        } else {
+            next_id = plists_[k - 1].CurrentEntry();
         }
-    } else {
-        next_id = plists_[k - 1].CurrentEntry();
-    }
-    for (size_t L = 0; L < k; ++L) {
-        plists_[L].SkipTo(next_id);
-    }
+        for (size_t L = 0; L < k; ++L) {
+            plists_[L].SkipTo(next_id);
+        }
+    } 
     return ret;
 }
 

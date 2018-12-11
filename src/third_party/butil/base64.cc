@@ -8,7 +8,7 @@
 
 namespace butil {
 
-void Base64Encode(const StringPiece& input, std::string* output) {
+void Base64Encode(const std::string& input, std::string* output) {
   std::string temp;
   temp.resize(modp_b64_encode_len(input.size()));  // makes room for null byte
 
@@ -19,7 +19,7 @@ void Base64Encode(const StringPiece& input, std::string* output) {
   output->swap(temp);
 }
 
-bool Base64Decode(const StringPiece& input, std::string* output) {
+bool Base64Decode(const std::string& input, std::string* output) {
   std::string temp;
   temp.resize(modp_b64_decode_len(input.size()));
 

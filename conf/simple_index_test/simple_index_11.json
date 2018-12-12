@@ -1,0 +1,18 @@
+{
+    "mode":"stanard",
+    "docid":11,
+    "disjunctions":[{
+        "conjunctions":[{
+            "name":"city",
+            "bt":false,
+            "value":{
+                "sval":["beijing"]
+            }
+        },{
+            "name":"gendor",
+            "value":{
+                "sval":["female"]
+            }
+        }]
+    }]
+}

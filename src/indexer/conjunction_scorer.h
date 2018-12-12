@@ -20,7 +20,7 @@ namespace cloris {
 class ConjunctionScorer {
 public:
     std::vector<int> GetMatchedDocid(size_t k);
-    void AddPostingList(std::list<int>* doc_list);
+    void AddPostingList(const std::list<DocidNode>* doc_list);
 private:
     std::vector<PostingList> plists_;
 };

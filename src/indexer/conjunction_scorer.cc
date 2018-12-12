@@ -10,7 +10,7 @@
 
 namespace cloris {
 
-void ConjunctionScorer::AddPostingList(std::list<int>* doc_list) {
+void ConjunctionScorer::AddPostingList(const std::list<DocidNode>* doc_list) {
     PostingList pl(doc_list);
     plists_.push_back(pl);
 }
@@ -28,21 +28,25 @@ std::vector<int> ConjunctionScorer::GetMatchedDocid(size_t k) {
         std::sort(plists_.begin(), plists_.end());
         if (plists_[0].CurrentEntry() == plists_[k - 1].CurrentEntry()) {
             // TODO support NOT IN
-            next_id = plists_[k - 1].CurrentEntry() + 1;
-            if (false) {
+            next_id = plists_[k - 1].CurrentEntry().docid + 1;
+            //
+            // e.g. city NOT IN {'beijing', 'shanghai'}
+            //
+            if (!plists_[0].CurrentEntry().is_belong_to) {
+                // Do nothing, just skip to next_id in [K, plists_.size())
             } else {
-                ret.push_back(plists_[k - 1].CurrentEntry());
-                // K=2,2,2,2,2
-                for (size_t L = k; L < plists_.size(); ++L) {
-                    if (plists_[L].CurrentEntry() < next_id) {
-                        plists_[L].SkipTo(next_id);
-                    } else {
-                        break;
-                    }
+                ret.push_back(plists_[k - 1].CurrentEntry().docid);
+            }
+            // skip same docid, e.g. docid=2,2,2,2,2
+            for (size_t L = k; L < plists_.size(); ++L) {
+                if (plists_[L].CurrentEntry().docid < next_id) {
+                    plists_[L].SkipTo(next_id);
+                } else {
+                    break;
                 }
             }
         } else {
-            next_id = plists_[k - 1].CurrentEntry();
+            next_id = plists_[k - 1].CurrentEntry().docid;
         }
         for (size_t L = 0; L < k; ++L) {
             plists_[L].SkipTo(next_id);

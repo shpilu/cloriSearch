@@ -9,16 +9,6 @@
 
 namespace cloris {
 
-void ItemListHead::Add(int docid) {
-    auto iter = doc_list.begin();
-    for (; iter != doc_list.end(); ++iter) {
-        if (*iter >= docid) {
-            break;
-        }
-    }
-    doc_list.insert(iter, docid);
-}
-
 SimpleIndexer::SimpleIndexer(const std::string& name, ValueType key_type)
     : name_(name),
       key_type_(key_type) {
@@ -46,22 +36,22 @@ static bool ParseTermsFromConjValue(const std::string& name, std::vector<Term>& 
     return true;
 }
 
-bool SimpleIndexer::Add(const ConjValue& value, int docid) {
+bool SimpleIndexer::Add(const ConjValue& value, bool is_belong_to, int docid) {
     std::vector<Term> terms;
     ParseTermsFromConjValue(name_, terms, value, key_type_);
     for (auto& term : terms) {
         if (lists_.find(term) == lists_.end()) {
-            lists_.insert(std::pair<Term, ItemListHead>(term, ItemListHead()));
+            lists_.insert(std::pair<Term, InvertedList>(term, InvertedList()));
         }
         cLog(DEBUG, "add simple_indexer item:[name=%s, value=%s, docid=%d]", term.name().c_str(), term.value().c_str(), docid);
-        lists_[term].Add(docid);
+        lists_[term].Add(is_belong_to, docid);
     }
     return true;
 }
 
-std::list<int>* SimpleIndexer::GetPostingLists(const Term& term) {
+const std::list<DocidNode>* SimpleIndexer::GetPostingLists(const Term& term) {
     if (lists_.find(term) != lists_.end()) {
-        return &(lists_[term].doc_list);
+        return &(lists_[term].doc_list()); 
     } else {
         return NULL;
     }

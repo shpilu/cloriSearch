@@ -9,30 +9,22 @@
 
 #include <unordered_map>
 #include <string>
+#include "inverted_list.h"
 #include "indexer.h"
 
 namespace cloris {
-
-// we treat docId AS string-type now
-// switch this to template in future
-struct ItemListHead {
-    void Add(int docid);
-    int len;
-    std::list<int> doc_list;
-    // skip_list<int> list;
-};
 
 class SimpleIndexer : public Indexer {
 public:
     SimpleIndexer(const std::string& name, ValueType key_type);
     ~SimpleIndexer();
-    virtual bool Add(const ConjValue& value, int docid);
-    virtual std::list<int>* GetPostingLists(const Term& term);
+    virtual bool Add(const ConjValue& value, bool is_belong_to, int docid);
+    virtual const std::list<DocidNode>* GetPostingLists(const Term& term);
 private:
     SimpleIndexer() = delete;
     std::string name_;
     ValueType key_type_;
-    std::unordered_map<Term, ItemListHead, TermHash> lists_;
+    std::unordered_map<Term, InvertedList, TermHash> lists_;
 };
 
 } // namespace cloris

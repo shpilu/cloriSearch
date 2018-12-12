@@ -27,6 +27,7 @@ public:
     std::vector<int> Search(const Query& query, int limit);
     void GetPostingLists(const Query& query, ConjunctionScorer& scorer);
 private:
+    InvertedList zlist_; // special Zero_list for Zero-index
     std::unordered_map<std::string, Indexer*> indexer_table_;
     size_t conjunctions_;
 };

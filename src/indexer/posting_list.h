@@ -7,26 +7,29 @@
 #ifndef CLORIS_POSTING_LIST_H_
 #define CLORIS_POSTING_LIST_H_
 
+//
+// you can not use this value as docid now
+//
+#define DN_BAD_DOCID -31415926 
+
 #include <list>
+#include "inverted_list.h"
 
 namespace cloris {
 
 class PostingList {
 public:
-    enum {
-        EOL = -1,
-    };
-public:
+    const static DocidNode EOL;
 
-    PostingList(std::list<int>* pl);
+    PostingList(const std::list<DocidNode>* pl);
     ~PostingList() { }
 
     bool operator < (const PostingList& pl) const ; 
-    int CurrentEntry() const;
+    const DocidNode& CurrentEntry() const;
     void SkipTo(int docid);
 private:
-    std::list<int>* doc_list_;
-    std::list<int>::iterator iter_;
+    const std::list<DocidNode>* doc_list_;
+    std::list<DocidNode>::const_iterator iter_;
 };
 
 } // namespace cloris

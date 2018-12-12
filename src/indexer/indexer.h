@@ -16,8 +16,8 @@ namespace cloris {
 class Indexer {
 public:
     virtual ~Indexer() { }
-    virtual bool Add(const ConjValue& value, int docid) = 0;
-    virtual std::list<int>* GetPostingLists(const Term& term) = 0;
+    virtual bool Add(const ConjValue& value, bool is_belong_to, int docid) = 0;
+    virtual const std::list<DocidNode>* GetPostingLists(const Term& term) = 0;
 protected:
     int type_;
 

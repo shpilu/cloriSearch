@@ -35,13 +35,19 @@ bool IndexerManager::Add(const Conjunction& conjunction, int docid) {
         return false;
     } else {
         cLog(INFO, "add term to indexer[%s], conjunctions=%d", conjunction.name().c_str(), conjunctions_);
-        return indexer_table_[conjunction.name()]->Add(conjunction.value(), docid);
+        bool is_belong_to = !conjunction.has_bt() || conjunction.bt();
+        return indexer_table_[conjunction.name()]->Add(conjunction.value(), is_belong_to, docid);
     }
 }
 
 bool IndexerManager::Add(const Disjunction& disjunction, int docid) {
     for (auto& conjunction : disjunction.conjunctions()) {
         this->Add(conjunction, docid);
+    }
+    // special for Zero-index
+    if (conjunctions_ == 0) {
+        cLog(DEBUG, "add term to ZERO indexer[docid=%d], conjunction=%d", docid, conjunctions_); 
+        zlist_.Add(true, docid);
     }
     return true;
 }
@@ -50,7 +56,7 @@ bool IndexerManager::Add(const Disjunction& disjunction, int docid) {
 void IndexerManager::GetPostingLists(const Query& query, ConjunctionScorer& scorer) {
     for (auto& term : query) {
         if (indexer_table_.find(term.name()) != indexer_table_.end()) {
-            std::list<int>* doc_list = indexer_table_[term.name()]->GetPostingLists(term);
+            const std::list<DocidNode>* doc_list = indexer_table_[term.name()]->GetPostingLists(term);
             if (doc_list) {
                 scorer.AddPostingList(doc_list);
                 cLog(INFO, "GetPostingLists, [conjs=%d, name=%s, value=%s, found", conjunctions_, term.name().c_str(), term.value().c_str());
@@ -58,6 +64,10 @@ void IndexerManager::GetPostingLists(const Query& query, ConjunctionScorer& scor
                 cLog(INFO, "GetPostingLists, [conjs=%d, name=%s, value=%s, NOT found", conjunctions_, term.name().c_str(), term.value().c_str());
             }
         }
+    }
+    if (zlist_.length() > 0) {
+        cLog(DEBUG, "GetPostingLists, Add ZEROR list");
+        scorer.AddPostingList(&(zlist_.doc_list()));
     }
 }
 

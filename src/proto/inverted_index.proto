@@ -17,6 +17,7 @@ syntax="proto2";
 //     "disjunctions":[{
 //         "conjunctions":[{
 //             "name":"city",
+//             "bt":false, 
 //             "value":{
 //                 "sval":["beijing", "shanghai", "shenzhen"]
 //             }
@@ -69,7 +70,8 @@ message ConjValue {
 
 message Conjunction {
     required string name = 1;
-    required ConjValue value = 2;
+    optional bool bt = 2[default=true]; // 'bt' is short for Belong To
+    required ConjValue value = 3;
 };
 
 message Disjunction {

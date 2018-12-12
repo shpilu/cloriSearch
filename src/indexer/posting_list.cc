@@ -8,7 +8,9 @@
 
 namespace cloris {
 
-PostingList::PostingList(std::list<int>* pl) : doc_list_(pl) {
+const DocidNode PostingList::EOL(DN_BAD_DOCID, false);
+
+PostingList::PostingList(const std::list<DocidNode>* pl) : doc_list_(pl) {
     iter_ = doc_list_->begin();
 }
 
@@ -19,7 +21,7 @@ bool PostingList::operator < (const PostingList& pl) const {
     return (this->CurrentEntry() < pl.CurrentEntry());
 }
 
-int PostingList::CurrentEntry() const {
+const DocidNode& PostingList::CurrentEntry() const {
     if (iter_ == doc_list_->end()) {
         return EOL;
     } else {
@@ -28,7 +30,7 @@ int PostingList::CurrentEntry() const {
 }
 
 void PostingList::SkipTo(int docid) {
-    while ((iter_ != doc_list_->end()) && (*iter_ < docid)) {
+    while ((iter_ != doc_list_->end()) && (iter_->docid < docid)) {
         ++iter_;
     }
 }

@@ -11,6 +11,17 @@
 
 namespace cloris {
 
+static size_t get_dnf_size(const Disjunction& disjunction) {
+    size_t dnf_size = 0;
+    for (auto &conj : disjunction.conjunctions()) {
+        // Belong To
+        if (!conj.has_bt() || conj.bt()) {
+            ++dnf_size;
+        }
+    }
+    return dnf_size;
+}
+
 InvertedIndex::InvertedIndex() {
 }
 
@@ -61,6 +72,9 @@ bool InvertedIndex::Init(const IndexSchema& schema, std::string& err_msg) {
     return true;
 }
 
+//
+// DNF: (A ^ B ^ C) v (A ^ D), the first step is to cut this expression into
+// A ^ B ^ C and A ^ D, then add them into the inverted list one by one 
 bool InvertedIndex::Add(const DNF& dnf, bool is_incremental) {
     for (auto& disjunction : dnf.disjunctions()) {
         this->Add(disjunction, dnf.docid(), is_incremental);
@@ -70,7 +84,7 @@ bool InvertedIndex::Add(const DNF& dnf, bool is_incremental) {
 
 // deal with city, device...
 bool InvertedIndex::Add(const Disjunction& disjunction, int docid, bool is_incremental) {
-    size_t conj_size = disjunction.conjunctions().size();
+    size_t conj_size = get_dnf_size(disjunction);
     IndexerManager& manager = itable_[conj_size];
     manager.Add(disjunction, docid);
     return true;

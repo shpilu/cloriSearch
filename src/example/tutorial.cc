@@ -38,7 +38,7 @@ int main() {
         std::cout << "cloriSearch init success" << std::endl;
     }
 
-    for (int i = 1; i < 10; ++i) {
+    for (int i = 1; i < 12; ++i) {
         std::string key = std::string("../conf/simple_index_test/simple_index_") + std::to_string(i) + ".json";
         std::cout << key << std::endl;
             
@@ -56,8 +56,8 @@ int main() {
     }
 
     Query query;
-    query["city"] = "beijing";
-    query["age"] = 20;
+    query["city"] = "shanghai";
+    query["age"] = 16;
     query["gendor"] = "female";
     query["student"] = true;
 

@@ -18,7 +18,7 @@ bool DocidNode::operator == (const DocidNode& dn) const {
 }
 
 bool DocidNode::operator != (const DocidNode& dn) const {
-    return (this->docid != dn.docid) || (this->is_belong_to != dn.is_belong_to);
+    return !operator==(dn);
 }
 
 void InvertedList::Add(bool is_belong_to, int docid) {

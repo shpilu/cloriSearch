@@ -7,6 +7,63 @@
 
 syntax="proto2";
 
+// Int32Interval default [...)
+message Int32Interval {
+    required int32 left = 1;
+    required int32 right = 2;
+    // open-or-closed interval description
+    // 00 -- ()
+    // 01 -- (] 
+    // 10 -- [)
+    // 11 -- []
+    required int32 flag = 3;
+};
+
+message StringInterval {
+    required string left = 1;
+    required string right = 2;
+    required int32 flag = 3;
+};
+
+message DoubleInterval {
+    required double left = 1;
+    required double right = 2;
+    required int32 flag = 3;
+};
+
+message Geo {
+    required float longitude = 1;
+    required float latitude  = 2;
+};
+
+message ConjValue {
+    repeated string sval = 1;
+    repeated int32  ival = 2;
+    repeated double dval = 3;
+    repeated Int32Interval int32_intvl = 4;
+    repeated DoubleInterval double_intvl = 5;
+    repeated StringInterval string_intvl = 6;
+    optional bool   bval = 7;
+    optional Geo geo = 8;
+};
+
+message Conjunction {
+    required string name = 1;
+    optional bool bt = 2[default=true]; // 'bt' is short for Belong To
+    required ConjValue value = 3;
+};
+
+message Disjunction {
+    repeated Conjunction conjunctions = 1; 
+};
+
+// Disjunctive Normal Form
+message DNF {
+    required int32 docid = 1;
+    required string mode = 2;
+    repeated Disjunction disjunctions = 3;
+};
+
 // A stanard DNF input:
 // {
 //     "mode":"stanard",
@@ -39,49 +96,9 @@ syntax="proto2";
 //         },{
 //             "name":"age",
 //             "value":{
-//             "section":[{"left":10,"closed":true, "right":14, "closed":true},{"left":22,"closed":true, "right":25, "closed":true}]
+//             "int32_intvl":[{"left":10,"right":14,"flag":3},{"left":22,"right":25,"flag":2}]
 //             }
 //         }]
 //     }]
-//     "value":"dadadadad" // en empty pointer in design
 // }
-
-// Section default [...)
-message Section {
-    required int64 left = 1;
-    required bool cleft = 2[default=true]; 
-    required int64 right = 3;
-    required bool cright = 4[default=false];
-};
-
-message Geo {
-    required float longitude = 1;
-    required float latitude  = 2;
-};
-
-message ConjValue {
-    repeated string sval = 1;
-    repeated int32  ival = 2;
-    repeated double dval = 3;
-    repeated Section section = 4;
-    optional bool   bval = 5;
-    optional Geo geo = 6;
-};
-
-message Conjunction {
-    required string name = 1;
-    optional bool bt = 2[default=true]; // 'bt' is short for Belong To
-    required ConjValue value = 3;
-};
-
-message Disjunction {
-    repeated Conjunction conjunctions = 1; 
-};
-
-// Disjunctive Normal Form
-message DNF {
-    required int32 docid = 1;
-    required string mode = 2;
-    repeated Disjunction disjunctions = 3;
-};
 

@@ -10,6 +10,7 @@
 #include <functional>
 #include <string>
 
+
 namespace cloris {
 
 enum ValueType {
@@ -17,7 +18,9 @@ enum ValueType {
     BOOL     = 1,
     INT32    = 2,
     STRING   = 3,
-    SECTION  = 4,
+    INT32_INTERVAL = 4,
+    DOUBLE_INTERVAL = 5,
+    STRING_INTERVAL = 6,
 };
 
 class Term {
@@ -26,6 +29,10 @@ public:
     Term(const std::string&, int32_t);
     Term(const std::string&, bool);
     Term(const std::string&, const std::string&);
+    // Interval Expression and Encoding
+    Term(const std::string&, int32_t, int32_t, int32_t);
+    Term(const std::string&, double, double, int32_t);
+    Term(const std::string&, const std::string&, const std::string&, int32_t);
     ~Term() { }
 
     Term& operator=(int32_t val);
@@ -37,6 +44,11 @@ public:
     ValueType type() const { return type_; }
     const std::string& name() const { return name_; }
     const std::string& value() const { return value_; }
+    void* left(size_t *llen = NULL);
+    void* right(size_t *rlen = NULL);
+
+    // unsafe method, used only for XX_INTERVAL type
+    int32_t flag() { char p = value_[0]; return p; }
 
 private:
     Term() = delete;

@@ -9,26 +9,26 @@
 
 namespace cloris {
 
-SimpleIndexer::SimpleIndexer(const std::string& name, ValueType key_type)
+SimpleIndexer::SimpleIndexer(const std::string& name, ValueType type)
     : name_(name),
-      key_type_(key_type) {
+      type_(type) {
 }
 
 SimpleIndexer::~SimpleIndexer() {
 }
 
-static bool ParseTermsFromConjValue(const std::string& name, std::vector<Term>& terms, const ConjValue& value, ValueType type) {
-    if (type == ValueType::INT32) {
+bool SimpleIndexer::ParseTermsFromConjValue(std::vector<Term>& terms, const ConjValue& value) {
+    if (type_ == ValueType::INT32) {
         for (auto& p : value.ival()) {
-            terms.push_back(Term(name, p));
+            terms.push_back(Term(name_, p));
         }
-    } else if (type == ValueType::STRING) {
+    } else if (type_ == ValueType::STRING) {
         for (auto& p : value.sval()) {
-            terms.push_back(Term(name, p));
+            terms.push_back(Term(name_, p));
         }
-    } else if (type == ValueType::BOOL) {
+    } else if (type_ == ValueType::BOOL) {
         if (value.has_bval()) {
-            terms.push_back(Term(name, value.bval()));
+            terms.push_back(Term(name_, value.bval()));
         }
     } else {
         // TODO
@@ -38,20 +38,20 @@ static bool ParseTermsFromConjValue(const std::string& name, std::vector<Term>& 
 
 bool SimpleIndexer::Add(const ConjValue& value, bool is_belong_to, int docid) {
     std::vector<Term> terms;
-    ParseTermsFromConjValue(name_, terms, value, key_type_);
+    this->ParseTermsFromConjValue(terms, value);
     for (auto& term : terms) {
-        if (lists_.find(term) == lists_.end()) {
-            lists_.insert(std::pair<Term, InvertedList>(term, InvertedList()));
+        if (inverted_lists_.find(term) == inverted_lists_.end()) {
+            inverted_lists_.insert(std::pair<Term, InvertedList>(term, InvertedList()));
         }
         cLog(DEBUG, "add simple_indexer item:[name=%s, value=%s, docid=%d]", term.name().c_str(), term.value().c_str(), docid);
-        lists_[term].Add(is_belong_to, docid);
+        inverted_lists_[term].Add(is_belong_to, docid);
     }
     return true;
 }
 
 const std::list<DocidNode>* SimpleIndexer::GetPostingLists(const Term& term) {
-    if (lists_.find(term) != lists_.end()) {
-        return &(lists_[term].doc_list()); 
+    if (inverted_lists_.find(term) != inverted_lists_.end()) {
+        return &(inverted_lists_[term].doc_list()); 
     } else {
         return NULL;
     }

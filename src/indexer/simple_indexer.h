@@ -16,15 +16,14 @@ namespace cloris {
 
 class SimpleIndexer : public Indexer {
 public:
-    SimpleIndexer(const std::string& name, ValueType key_type);
+    SimpleIndexer(const std::string& name, ValueType type);
     ~SimpleIndexer();
+    virtual bool ParseTermsFromConjValue(std::vector<Term>& terms, const ConjValue& value); 
     virtual bool Add(const ConjValue& value, bool is_belong_to, int docid);
     virtual const std::list<DocidNode>* GetPostingLists(const Term& term);
 private:
     SimpleIndexer() = delete;
-    std::string name_;
-    ValueType key_type_;
-    std::unordered_map<Term, InvertedList, TermHash> lists_;
+    std::unordered_map<Term, InvertedList, TermHash> inverted_lists_;
 };
 
 } // namespace cloris

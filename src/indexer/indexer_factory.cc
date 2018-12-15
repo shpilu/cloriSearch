@@ -6,6 +6,7 @@
 
 #include "internal/singleton.h"
 #include "simple_indexer.h"
+#include "interval_indexer.h"
 #include "indexer_factory.h"
 
 namespace cloris {
@@ -20,6 +21,16 @@ Indexer* IndexerFactory::CreateIndexer(const std::string& name, const std::strin
             return new SimpleIndexer(name, ValueType::INT32);
         } else if (key_type == "string") {
             return new SimpleIndexer(name, ValueType::STRING);
+        } else {
+            return NULL;
+        }
+    } else if (index_type == "interval") {
+        if (key_type == "int32") {
+            return new IntervalIndexer<int32_t>(name);
+        } else if (key_type == "double") {
+            return new IntervalIndexer<double>(name);
+        } else if (key_type == "string") {
+            return new IntervalIndexer<std::string>(name);
         } else {
             return NULL;
         }

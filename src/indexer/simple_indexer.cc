@@ -10,8 +10,8 @@
 namespace cloris {
 
 SimpleIndexer::SimpleIndexer(const std::string& name, ValueType type)
-    : name_(name),
-      type_(type) {
+    : Indexer(name) {
+    type_ = type;
 }
 
 SimpleIndexer::~SimpleIndexer() {

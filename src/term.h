@@ -7,20 +7,27 @@
 #ifndef CLORISEARCH_TERM_H_
 #define CLORISEARCH_TERM_H_
 
+#include <cstring>
 #include <functional>
 #include <string>
 
+#define INTERVAL_TYPE_MASK  0x00010000
+#define INTERVAL_FLAG_MASG  0x00000003
+#define BASIC_TYPE_MASK     0x00001111
 
 namespace cloris {
 
 enum ValueType {
-    NONE     = 0,
-    BOOL     = 1,
-    INT32    = 2,
-    STRING   = 3,
-    INT32_INTERVAL = 4,
-    DOUBLE_INTERVAL = 5,
-    STRING_INTERVAL = 6,
+    NONE     = 0x00000000,
+    BOOL     = 0x00000001,
+    INT32    = 0x00000002,
+    DOUBLE   = 0x00000004,
+    STRING   = 0x00000008,
+    MIN_INTERVAL_TYPE = 0x00010002,
+    INT32_INTERVAL =  0x00010002,
+    DOUBLE_INTERVAL = 0x00010004,
+    STRING_INTERVAL = 0x00010008,
+    MAX_INTERVAL_TYPE = 0x00010008,
 };
 
 class Term {
@@ -44,11 +51,13 @@ public:
     ValueType type() const { return type_; }
     const std::string& name() const { return name_; }
     const std::string& value() const { return value_; }
-    void* left(size_t *llen = NULL);
-    void* right(size_t *rlen = NULL);
+    void* data() { return &value_[0]; }
+    const void* data() const { return &value_[0]; }
+    const void* left(size_t *llen = NULL) const ;
+    const void* right(size_t *rlen = NULL) const;
 
     // unsafe method, used only for XX_INTERVAL type
-    int32_t flag() { char p = value_[0]; return p; }
+    int32_t flag() const { char p = value_[0]; return p; }
 
 private:
     Term() = delete;

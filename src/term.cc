@@ -41,11 +41,11 @@ Term::Term(const std::string& name, const std::string& val) {
 Term::Term(const std::string& name, int32_t left, int32_t right, int32_t flag) {
     size_t len = sizeof(char) + sizeof(int32_t) * 2;
     char tmp[len];
-    tmp[0] = flag & INTERVAL_TYPE_MASK;
+    tmp[0] = flag & BASIC_TYPE_MASK;
     *(reinterpret_cast<int32_t*>(tmp[sizeof(char)])) = left;
     *(reinterpret_cast<int32_t*>(tmp[sizeof(char) + sizeof(int32_t)])) = right;
     value_.reserve(len);
-    value_.assign(reinterpret_cast<char*>(&val), len);
+    value_.assign(reinterpret_cast<char*>(&tmp), len);
     type_ = ValueType::INT32_INTERVAL;
 };
 
@@ -58,11 +58,11 @@ Term::Term(const std::string& name, int32_t left, int32_t right, int32_t flag) {
 Term::Term(const std::string& name, double left, double right, int32_t flag) {
     size_t len = sizeof(char) + sizeof(double) * 2;
     char tmp[len];
-    tmp[0] = flag & INTERVAL_TYPE_MASK;
+    tmp[0] = flag & BASIC_TYPE_MASK;
     *(reinterpret_cast<double*>(tmp[sizeof(char)])) = left;
     *(reinterpret_cast<double*>(tmp[sizeof(char) + sizeof(double)])) = right;
     value_.reserve(len);
-    value_.assign(reinterpret_cast<char*>(&val), len);
+    value_.assign(reinterpret_cast<char*>(&tmp), len);
     type_ = ValueType::DOUBLE_INTERVAL;
 };
 
@@ -73,13 +73,13 @@ Term::Term(const std::string& name, double left, double right, int32_t flag) {
 // | flag |  len1  |  left  |  len2  | right  |
 //
 Term::Term(const std::string& name, const std::string& left, const std::string& right, int32_t flag) {
-    size_t len = sizeof(char) + sizeof(size_t) * 2 + left.length() + right.leng();
+    size_t len = sizeof(char) + sizeof(size_t) * 2 + left.length() + right.length();
     value_.reserve(len);
-    value_[0] = flag & INTERVAL_TYPE_MASK;
+    value_[0] = flag & BASIC_TYPE_MASK;
     *(reinterpret_cast<size_t*>(value_[sizeof(char)])) = left.length();
-    memcpy(value_[sizeof(char) + sizeof(size_t)], left.data(), left.length());
+    memcpy(&value_[sizeof(char) + sizeof(size_t)], left.data(), left.length());
     *(reinterpret_cast<size_t*>(value_[sizeof(char) + sizeof(size_t) + left.length()])) = right.length();
-    memcpy(value_[sizeof(char) + sizeof(size_t) * 2 + left.length()], right.data(), right.length());
+    memcpy(&value_[sizeof(char) + sizeof(size_t) * 2 + left.length()], right.data(), right.length());
     type_ = ValueType::STRING_INTERVAL;
 };
 
@@ -118,44 +118,44 @@ bool Term::operator==(const Term& t) const {
     return ((type_ == t.type()) && (value_ == t.value())); 
 }
 
-void* Term::left(size_t *llen) {
-    void *p = NULL;
+const void* Term::left(size_t *llen) const {
+    const void *p = NULL;
     if (type_ == ValueType::INT32_INTERVAL) {
         if (llen) {
             *llen = sizeof(int32_t);
         }
         p = &(value_[1]);
-    } else if (type == ValueType::DOUBLE_INTERVAL) {
+    } else if (type_ == ValueType::DOUBLE_INTERVAL) {
         if (llen) {
             *llen = sizeof(double);
         }
         p = &(value_[1]);
-    } else if (type == ValueType::STRING_INTERVAL) {
+    } else if (type_ == ValueType::STRING_INTERVAL) {
         if (llen) {
-            *llen = *reinterpret_cast<size_t*>(value_[1])
+            *llen = *reinterpret_cast<size_t*>(value_[1]);
         }
         p = &value_[1 + sizeof(size_t)];
     }
     return p; 
 }
 
-void* Term::right(size_t *rlen) {
-    void *p = NULL;
+const void* Term::right(size_t *rlen) const {
+    const void *p = NULL;
     if (type_ == ValueType::INT32_INTERVAL) {
         if (rlen) {
             *rlen = sizeof(int32_t);
         }
         p = &(value_[1 + sizeof(int32_t)]);
-    } else if (type == ValueType::DOUBLE_INTERVAL) {
+    } else if (type_ == ValueType::DOUBLE_INTERVAL) {
         if (rlen) {
             *rlen = sizeof(double);
         }
-        p = &(value_[1] + sizeof(double));
-    } else if (type == ValueType::STRING_INTERVAL) {
+        p = &(value_[1 + sizeof(double)]);
+    } else if (type_ == ValueType::STRING_INTERVAL) {
         if (rlen) {
-            *rlen = *reinterpret_cast<size_t*>(value_[1 + sizeof(size_t) + (*reinterpret_cast<size_t*>(value_[1]))])
+            *rlen = *reinterpret_cast<size_t*>(value_[1 + sizeof(size_t) + (*reinterpret_cast<size_t*>(value_[1]))]);
         }
-        p = &value_[1 + (sizeof(size_t) * 2) + (*reinterpret_cast<size_t*>(value_[1]))]
+        p = &value_[1 + (sizeof(size_t) * 2) + (*reinterpret_cast<size_t*>(value_[1]))];
     }
     return p; 
 }

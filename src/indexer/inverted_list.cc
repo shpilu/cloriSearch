@@ -31,6 +31,13 @@ void InvertedList::Add(bool is_belong_to, int docid) {
     doc_list_.insert(iter, DocidNode(docid, is_belong_to));
 }
 
+void InvertedList::Copy(const InvertedList& other) {
+    doc_list_.clear();
+    for (auto& p : other.doc_list()) {
+        doc_list_.push_back(p);
+    }
+}
+
 } // namespace cloris
 
 

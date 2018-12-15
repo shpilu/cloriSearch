@@ -31,7 +31,8 @@ public:
     InvertedList() {}
     ~InvertedList() {}
     void Add(bool is_belong_to, int docid); 
-    const std::list<DocidNode>& doc_list() { return doc_list_; }
+    void Copy(const InvertedList& other);
+    const std::list<DocidNode>& doc_list() const { return doc_list_; }
     size_t length() const { return doc_list_.size(); }
 private:
     std::list<DocidNode> doc_list_;

@@ -12,8 +12,10 @@
 #include <string>
 
 #define INTERVAL_TYPE_MASK  0x00010000
-#define INTERVAL_FLAG_MASG  0x00000003
-#define BASIC_TYPE_MASK     0x00001111
+#define INTERVAL_FLAG_MASK  0x00000003
+#define INTERVAL_LEFT_MASK  0x00000002
+#define INTERVAL_RIGHT_MASK 0x00000001
+#define BASIC_TYPE_MASK     0x0000000f
 
 namespace cloris {
 
@@ -55,6 +57,7 @@ public:
     const void* data() const { return &value_[0]; }
     const void* left(size_t *llen = NULL) const ;
     const void* right(size_t *rlen = NULL) const;
+    std::string Print() const;
 
     // unsafe method, used only for XX_INTERVAL type
     int32_t flag() const { char p = value_[0]; return p; }

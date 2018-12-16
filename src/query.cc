@@ -23,4 +23,8 @@ Term& Query::at(const std::string& key) {
     return terms_.at(key);
 }
 
+void Query::Append(const Term& term) {
+    terms_.insert(std::pair<std::string, Term>(term.name(), term));
+}
+
 } // namepace cloris

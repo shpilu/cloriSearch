@@ -25,10 +25,9 @@ public:
 
     Query() {}
     virtual ~Query() {}
-    
     Term& operator[](const std::string& key);
     Term& at(const std::string& key);
-
+    void Append(const Term& term);
     size_t size() const { return terms_.size(); }
 private:
     std::map<std::string, Term> terms_;

@@ -22,7 +22,7 @@
 #include <stdexcept>  // std::logic_error
 #include <type_traits> // std::is_same
 #include <functional> // std::less
-#include "third_party/cloriskip/skip_list.h"
+#include "internal/cloriskip/skip_list.h"
 #include "interval.h"
 #include "indexer.h"
 

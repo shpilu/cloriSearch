@@ -143,7 +143,7 @@ void Interval<T, Compare>::Subtract(const SelfType& target, SelfType& left_resul
     // E. a.left < b.left, b.right >= a.right , b.left <= a.right | s.left = (a.left, b.left), s.right = EMPTY;
     // F. b.left > a.right | s.left = (a.left, a.right), s.right = EMPTY 
     //
-    if (target.left() < left()) {
+    if (target.left() <= left()) {
         left_result.set_empty();
         // case A
         if (target.right() < left()) {
@@ -190,7 +190,7 @@ void Interval<T, Compare>::Intersect(const SelfType& target, SelfType& result) c
     // D. a.left < b.left, b.right < a.right | s = b
     // E. a.left < b.left, b.right >= a.right , b.left <= a.right | s = (b.left, a.right)
     // F. b.left > a.right | EMPTY 
-    if (target.left() < left()) {
+    if (target.left() <= left()) {
         // case A
         if (target.right() < left()) {
             result.set_empty();
@@ -237,7 +237,7 @@ void Interval<T, Compare>::Slice(const SelfType& target,
         return;
     }
 
-    if (target.left() < left()) {
+    if (target.left() <= left()) {
         left_result.set_empty();
         // case A
         if (target.right() < left()) {

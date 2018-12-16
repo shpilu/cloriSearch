@@ -205,7 +205,9 @@ public:
     size_type      count(const value_type &value) const;
 
     iterator       find(const value_type &value);
+    iterator       find_first(const value_type &value);
     const_iterator find(const value_type &value) const;
+    const_iterator find_first(const value_type &value) const;
 
     //======================================================================
     // other operations
@@ -759,6 +761,27 @@ skip_list<T,C,A,LG,D>::find(const value_type &value) const
     const node_type *node = impl.find(value);
     return to_iterator(node, value);
 }
+
+// 
+// @James Wei
+// to support interval value_type match
+//
+template <class T, class C, class A, class LG, bool D>
+inline
+typename skip_list<T,C,A,LG,D>::iterator
+skip_list<T,C,A,LG,D>::find_first(const value_type &value) {
+    node_type *node = impl.find_first_match(value);
+    return to_iterator(node, value);
+}
+  
+template <class T, class C, class A, class LG, bool D>
+inline
+typename skip_list<T,C,A,LG,D>::const_iterator
+skip_list<T,C,A,LG,D>::find_first(const value_type &value) const {
+    const node_type *node = impl.find_first_match(value);
+    return to_iterator(node, value);
+}
+
     
 } // namespace goodliffe
 
@@ -946,6 +969,7 @@ public:
     node_type       *one_past_end()                        { return tail; }
     const node_type *one_past_end() const                  { return tail; }
     node_type       *find(const value_type &value) const;
+    node_type       *find_first_match(const value_type &value) const;
     node_type       *find_first(const value_type &value) const;
     node_type       *insert(const value_type &value, node_type *hint = 0);
     void             remove(node_type *value);
@@ -1079,6 +1103,33 @@ sl_impl<T,C,A,LG,D>::find(const value_type &value) const
     return search;
 }
     
+template <class T, class C, class A, class LG, bool D>
+inline
+typename sl_impl<T,C,A,LG,D>::node_type *
+sl_impl<T,C,A,LG,D>::find_first_match(const value_type &value) const {
+    node_type *search = const_cast<node_type*>(head);
+
+    for (unsigned l = levels; l; ) {
+        --l;
+        while (search->next[l] != tail) {
+            if (less(search->next[l]->value, value)) {
+                search = search->next[l];
+            } else if (less(value, search->next[l]->value)) { // not found
+                break;
+            } else {
+                // found now;
+                search = search->next[l];
+                while (search != head && detail::equivalent(search->prev->value, value, less)) {
+                    search = search->prev;
+                }
+                return search;
+            }
+        }
+    }
+    return search;
+}
+
+
 template <class T, class C, class A, class LG, bool D>
 inline
 typename sl_impl<T,C,A,LG,D>::node_type *

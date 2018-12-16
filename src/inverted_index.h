@@ -28,7 +28,7 @@ public:
     bool Update(DNF *dnf, int docid);
     bool Del(int docid);
     std::vector<int> Search(const Query& query, int limit);
-    void GetStandardQuery(const Query& query);
+    void GetStandardQuery(const Query& query, Query& std_query);
 private:
     std::set<std::string> terms_; // age, sex, city...
     int max_conj_;

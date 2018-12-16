@@ -100,17 +100,24 @@ bool InvertedIndex::Del(int docid) {
     return true;
 }
 
-void InvertedIndex::GetStandardQuery(const Query& query) {
+// TODO
+void InvertedIndex::GetStandardQuery(const Query& query, Query& std_query) {
+    for (auto &p : query) {
+        if (terms_.find(p.name()) != terms_.end()) {
+            std_query.Append(p);
+        }
+    }
     return ;
 }
 
 // TODO
 std::vector<int> InvertedIndex::Search(const Query& query, int limit) {
     std::vector<int> response;
+    Query std_query;
     // clean unexisted key
-    this->GetStandardQuery(query);
-    for (int i = static_cast<int>(query.size()); i >= 0; --i) {
-        std::vector<int> tmp_vec = itable_[i].Search(query, limit);
+    this->GetStandardQuery(query, std_query);
+    for (int i = static_cast<int>(std_query.size()); i >= 0; --i) {
+        std::vector<int> tmp_vec = itable_[i].Search(std_query, limit);
         for (auto &p : tmp_vec) {
             response.push_back(p);
         }

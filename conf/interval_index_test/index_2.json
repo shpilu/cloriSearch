@@ -1,0 +1,19 @@
+{
+    "mode":"stanard",
+    "docid":2,
+    "disjunctions":[{
+        "conjunctions":[{
+            "name":"city",
+            "value":{
+                "sval":["shanghai", "shenzhen"]
+            }
+        },{
+            "name":"age",
+            "value":{
+                "int32_intvl":[
+                    {"left":15, "right":22, "flag":3}
+                ]
+            }
+        }]
+    }]
+}

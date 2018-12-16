@@ -200,22 +200,30 @@ const std::list<DocidNode>* IntervalIndexer<T, C>::GetPostingLists(const Term& t
 template<typename T, typename C>
 bool IntervalIndexer<T, C>::Add(const Term& term, bool is_belong_to, int docid) {
     IntervalNode<T> search_node(term, type_);
-    cLog(INFO, "[interval_indexer] try add node %s, term: %s", search_node.print().c_str(), term.Print().c_str());
+    cLog(INFO, "[interval_indexer] try add node %s, term: %s", search_node.print().c_str(), term.print().c_str());
+
     while (search_node) {
         // try to find the the first node whose intersection with term is not empty 
-        typename goodliffe::skip_list<IntervalNode<T, C>>::iterator iter = inverted_lists_.find(search_node);
+        typename goodliffe::skip_list<IntervalNode<T, C>>::iterator iter = inverted_lists_.find_first(search_node);
+        cLog(DEBUG, "looping, %s", search_node.print().c_str());
         // empty intersection 
-        if (iter != inverted_lists_.end()) {
-            // TODO, check...
+        if (iter == inverted_lists_.end()) {
+            cLog(DEBUG, "no intersection found, just add");
             search_node.Add(is_belong_to, docid);
             inverted_lists_.insert(search_node);
             break;
         } else {
+            cLog(DEBUG, "intersection found, calculate xxx, node: %s", iter->print().c_str());
             Interval<T> left, intersection, right, xleft, xright;
             iter->Slice(search_node, left, intersection, right); 
             search_node.Subtract(*iter, xleft, xright);
+            cLog(DEBUG, "[interval_calc] %s ~ %s, left=%s, inter=%s, right=%s, xleft=%s, xright=%s", iter->print().c_str(), 
+                    search_node.print().c_str(), left.print().c_str(), intersection.print().c_str(), 
+                    right.print().c_str(), xleft.print().c_str(), xright.print().c_str());
             if (!left && !right) {
                 // the old is absolutely covered 
+                cLog(DEBUG, "the old element is absolutely covered, old:%s, new:%s", 
+                        iter->print().c_str(), search_node.print().c_str());
                 iter->Add(is_belong_to, docid);
             } else {
                 InvertedList ilist;
@@ -230,7 +238,7 @@ bool IntervalIndexer<T, C>::Add(const Term& term, bool is_belong_to, int docid) 
                     inverted_lists_.insert(left_node);
                 }
                 if (right) {
-                    IntervalNode<T> right_node(left, ilist);
+                    IntervalNode<T> right_node(right, ilist);
                     inverted_lists_.insert(right_node);
                 }
             }

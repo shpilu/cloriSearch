@@ -17,7 +17,7 @@ include_directories(${CMAKE_CURRENT_SRC_DIR}
                     ${PROJECT_BINARY_DIR}/output/include)
 
 set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} ${DEBUG_SYMBOL}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CPP_FLAGS} -O2 -pipe -Wall -W -fPIC -fstrict-aliasing -Wno-invalid-offsetof -Wno-unused-parameter -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS "${CMAKE_CPP_FLAGS} -O2 -pipe -Wall -W -fPIC -Wno-strict-aliasing -Wno-invalid-offsetof -Wno-unused-parameter -fno-omit-frame-pointer")
 
 macro(use_cxx11)
 if(CMAKE_VERSION VERSION_LESS "3.1.3")

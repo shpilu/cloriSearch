@@ -159,7 +159,7 @@ const void* Term::right(size_t *rlen) const {
     return p; 
 }
 
-std::string Term::Print() const {
+std::string Term::print() const {
     std::stringstream ss;
     ss << this->name_ << " ∈ ";
     switch (type_) {

@@ -57,7 +57,7 @@ public:
     const void* data() const { return &value_[0]; }
     const void* left(size_t *llen = NULL) const ;
     const void* right(size_t *rlen = NULL) const;
-    std::string Print() const;
+    std::string print() const;
 
     // unsafe method, used only for XX_INTERVAL type
     int32_t flag() const { char p = value_[0]; return p; }

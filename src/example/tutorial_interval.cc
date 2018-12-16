@@ -57,7 +57,7 @@ int main() {
     query["student"] = true;
 
     for (auto &p : query) {
-        std::cout << p.name() << "=" << p.value() << std::endl;
+        std::cout << p.print() << std::endl;
     }
 
     std::vector<int> res = sch->Search(query, 10);

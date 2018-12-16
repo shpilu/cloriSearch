@@ -71,9 +71,14 @@ set_target_properties(clorisearch-shared PROPERTIES OUTPUT_NAME clorisearch CLEA
 set_target_properties(clorisearch-static PROPERTIES OUTPUT_NAME clorisearch CLEAN_DIRECT_OUTPUT 1)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/output/bin)
-set(TUTORIAL_SOURCES ${PROJECT_SOURCE_DIR}/src/example/tutorial.cc)
-add_executable(tutorial ${TUTORIAL_SOURCES})
-target_link_libraries(tutorial clorisearch-shared protobuf)
+
+set(TUTORIAL_SIMPLE_SOURCES ${PROJECT_SOURCE_DIR}/src/example/tutorial_simple.cc)
+add_executable(tutorial_simple ${TUTORIAL_SIMPLE_SOURCES})
+target_link_libraries(tutorial_simple clorisearch-shared protobuf)
+
+set(TUTORIAL_INTERVAL_SOURCES ${PROJECT_SOURCE_DIR}/src/example/tutorial_interval.cc)
+add_executable(tutorial_interval ${TUTORIAL_INTERVAL_SOURCES})
+target_link_libraries(tutorial_interval clorisearch-shared protobuf)
 
 file(COPY ${PROJECT_SOURCE_DIR}/bin/
     DESTINATION ${EXECUTABLE_OUTPUT_PATH})

@@ -23,6 +23,7 @@
 #include <type_traits> // std::is_same
 #include <functional> // std::less
 #include "internal/cloriskip/skip_list.h"
+#include "internal/log.h"
 #include "interval.h"
 #include "indexer.h"
 
@@ -166,10 +167,12 @@ bool IntervalIndexer<T, C>::ParseTermsFromConjValue(std::vector<Term>& terms, co
         for (auto& p : value.double_intvl()) {
             terms.push_back(Term(name_, p.left(), p.right(), p.flag()));
         }
-    }  else if (type_ == STRING_INTERVAL) {
+    } else if (type_ == STRING_INTERVAL) {
         for (auto& p : value.string_intvl()) {
             terms.push_back(Term(name_, p.left(), p.right(), p.flag()));
         }
+    } else {
+        cLog(WARN, "[interval_indexer warning] unsupported term type");
     }
     return true;
 }
@@ -197,6 +200,7 @@ const std::list<DocidNode>* IntervalIndexer<T, C>::GetPostingLists(const Term& t
 template<typename T, typename C>
 bool IntervalIndexer<T, C>::Add(const Term& term, bool is_belong_to, int docid) {
     IntervalNode<T> search_node(term, type_);
+    cLog(INFO, "[interval_indexer] try add node %s, term: %s", search_node.print().c_str(), term.Print().c_str());
     while (search_node) {
         // try to find the the first node whose intersection with term is not empty 
         typename goodliffe::skip_list<IntervalNode<T, C>>::iterator iter = inverted_lists_.find(search_node);

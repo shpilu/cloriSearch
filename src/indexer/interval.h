@@ -11,16 +11,7 @@
 
 #include <unistd.h>
 #include <functional>
-
-// 
-// #define INTERVAL_OPEN           0x00000000
-// #define INTERVAL_OPEN_CLOSE     0x00000001
-// #define INTERVAL_CLOSE_OPEN     0x00000002
-// #define INTERVAL_CLOSE          0x00000003
-// #define INTERVAL_EMPTY          0x00000004
-// 
-// #define INTERVAL_LEFT_MASK      0x00000002
-// #define INTERVAL_RIGHT_MASK     0x00000001 
+#include <sstream>
 
 // NEW ----
 #define INTERVAL_EMPTY          0x00000008
@@ -112,6 +103,17 @@ public:
     inline void set_empty() { 
         left_.flag |= INTERVAL_EMPTY; 
         right_.flag |= INTERVAL_EMPTY; 
+    }
+    inline std::string print() const {
+        std::stringstream ss;
+        if (is_empty()) {
+            ss << "{}";
+        } else {
+            ss << ((left_.flag == INTERVAL_CLOSE) ? "[" : "(");
+            ss << left_.value << ", " << right_.value;
+            ss << ((right_.flag == INTERVAL_CLOSE) ? "]" : ")");
+        }
+        return ss.str();
     }
 private:
     Point left_;

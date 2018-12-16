@@ -17,11 +17,7 @@ const char* g_index_schema = "{ \
     },{ \
         \"name\":\"age\", \
         \"key_type\":\"int32\", \
-        \"index_type\":\"simple\" \
-    },{ \
-        \"name\":\"student\", \
-        \"key_type\":\"bool\", \
-        \"index_type\":\"simple\" \
+        \"index_type\":\"interval\" \
     },{ \
         \"name\":\"gendor\", \
         \"key_type\":\"string\", \
@@ -38,15 +34,14 @@ int main() {
         std::cout << "cloriSearch init success" << std::endl;
     }
 
-    for (int i = 1; i < 12; ++i) {
-        std::string key = std::string("../conf/simple_index_test/simple_index_") + std::to_string(i) + ".json";
+    for (int i = 1; i <= 3; ++i) {
+        std::string key = std::string("../conf/interval_index_test/index_") + std::to_string(i) + ".json";
         std::cout << key << std::endl;
             
         std::fstream in(key.c_str());
         std::istreambuf_iterator<char> begin(in); 
         std::istreambuf_iterator<char> end; 
         std::string dnf_str(begin, end);
-        // std::cout << "raw_dnf=" << dnf_str << std::endl;
 
         if (sch->Add(dnf_str, IndexSchemaFormat::ISF_JSON, false)) {
             std::cout << "add index success" << std::endl;

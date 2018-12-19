@@ -10,6 +10,12 @@
 
 namespace cloris {
 
+ConjunctionScorer::~ConjunctionScorer() {
+    for (auto &p : plists_) {
+        p.ReclaimDocList();
+    }
+}
+
 void ConjunctionScorer::AddPostingList(std::list<DocidNode>* doc_list, const ReclaimHandler& handler) {
     PostingList pl(doc_list, handler);
     plists_.push_back(pl);

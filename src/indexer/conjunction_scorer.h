@@ -19,6 +19,8 @@ namespace cloris {
 // 每个倒排链起名叫posting list
 class ConjunctionScorer {
 public:
+    ConjunctionScorer() {}
+    ~ConjunctionScorer(); 
     std::vector<int> GetMatchedDocid(size_t k);
     void AddPostingList(std::list<DocidNode>* doc_list, const ReclaimHandler& handler);
 private:

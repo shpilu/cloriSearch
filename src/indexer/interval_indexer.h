@@ -48,7 +48,7 @@ public:
     IntervalNode(const Interval<T>& interval, const InvertedList& vlist);
     IntervalNode(const Interval<T>& interval);
     void Add(bool is_belong_to, int docid) { return list_.Add(is_belong_to, docid); }
-    const InvertedList& list() const { return list_; }
+    InvertedList& list() { return list_; }
 private:
     InvertedList list_;
 };
@@ -130,7 +130,7 @@ public:
     bool ParseTermsFromConjValue(std::vector<Term>& terms, const ConjValue& value);
     bool Add(const Term& term, bool is_belong_to, int docid);
     virtual bool Add(const ConjValue& value, bool is_belong_to, int docid);
-    virtual const std::list<DocidNode>* GetPostingLists(const Term& term);
+    virtual std::list<DocidNode>* GetPostingLists(const Term& term);
 private:
     goodliffe::skip_list<IntervalNode<T, Compare>> inverted_lists_;
 };
@@ -179,7 +179,7 @@ bool IntervalIndexer<T, C>::ParseTermsFromConjValue(std::vector<Term>& terms, co
 
 // TODO support range search like 18 <= age < 20, not only single value
 template<typename T, typename C>
-const std::list<DocidNode>* IntervalIndexer<T, C>::GetPostingLists(const Term& term) {
+std::list<DocidNode>* IntervalIndexer<T, C>::GetPostingLists(const Term& term) {
     IntervalNode<T> search_node(term, type_);
     if (!search_node) {
         return NULL;
@@ -187,8 +187,8 @@ const std::list<DocidNode>* IntervalIndexer<T, C>::GetPostingLists(const Term& t
     // 得到实际是交集
     typename goodliffe::skip_list<IntervalNode<T, C>>::iterator iter = inverted_lists_.find(search_node);
     if (iter != inverted_lists_.end()) {
-        const InvertedList& li = iter->list();
-        return &(li.doc_list());
+        InvertedList& li = iter->list();
+        return &(li.mutable_doc_list());
     } else {
         return NULL;
     }

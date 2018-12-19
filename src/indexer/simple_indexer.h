@@ -20,7 +20,7 @@ public:
     ~SimpleIndexer();
     virtual bool ParseTermsFromConjValue(std::vector<Term>& terms, const ConjValue& value); 
     virtual bool Add(const ConjValue& value, bool is_belong_to, int docid);
-    virtual const std::list<DocidNode>* GetPostingLists(const Term& term);
+    virtual std::list<DocidNode>* GetPostingLists(const Term& term);
 private:
     SimpleIndexer() = delete;
     std::unordered_map<Term, InvertedList, TermHash> inverted_lists_;

@@ -49,9 +49,9 @@ bool SimpleIndexer::Add(const ConjValue& value, bool is_belong_to, int docid) {
     return true;
 }
 
-const std::list<DocidNode>* SimpleIndexer::GetPostingLists(const Term& term) {
+std::list<DocidNode>* SimpleIndexer::GetPostingLists(const Term& term) {
     if (inverted_lists_.find(term) != inverted_lists_.end()) {
-        return &(inverted_lists_[term].doc_list()); 
+        return &(inverted_lists_[term].mutable_doc_list()); 
     } else {
         return NULL;
     }

@@ -20,7 +20,6 @@ struct DocidNode {
     bool operator < (const DocidNode& dn) const; 
     bool operator == (const DocidNode& dn) const; 
     bool operator != (const DocidNode& dn) const; 
-
     int docid;
     bool is_belong_to;
 };
@@ -32,6 +31,7 @@ public:
     ~InvertedList() {}
     void Add(bool is_belong_to, int docid); 
     void Copy(const InvertedList& other);
+    std::list<DocidNode>& mutable_doc_list() { return doc_list_; }
     const std::list<DocidNode>& doc_list() const { return doc_list_; }
     size_t length() const { return doc_list_.size(); }
 private:

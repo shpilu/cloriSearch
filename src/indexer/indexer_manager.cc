@@ -56,9 +56,9 @@ bool IndexerManager::Add(const Disjunction& disjunction, int docid) {
 void IndexerManager::GetPostingLists(const Query& query, ConjunctionScorer& scorer) {
     for (auto& term : query) {
         if (indexer_table_.find(term.name()) != indexer_table_.end()) {
-            const std::list<DocidNode>* doc_list = indexer_table_[term.name()]->GetPostingLists(term);
+            std::list<DocidNode>* doc_list = indexer_table_[term.name()]->GetPostingLists(term);
             if (doc_list) {
-                scorer.AddPostingList(doc_list);
+                scorer.AddPostingList(doc_list, indexer_table_[term.name()]->reclaim_handler());
                 cLog(INFO, "GetPostingLists, [conjs=%d, name=%s, value=%s, found", conjunctions_, term.name().c_str(), term.value().c_str());
             } else {
                 cLog(INFO, "GetPostingLists, [conjs=%d, name=%s, value=%s, NOT found", conjunctions_, term.name().c_str(), term.value().c_str());
@@ -67,7 +67,7 @@ void IndexerManager::GetPostingLists(const Query& query, ConjunctionScorer& scor
     }
     if (zlist_.length() > 0) {
         cLog(DEBUG, "GetPostingLists, Add ZEROR list");
-        scorer.AddPostingList(&(zlist_.doc_list()));
+        scorer.AddPostingList(&(zlist_.mutable_doc_list()), NULL);
     }
 }
 

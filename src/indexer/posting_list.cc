@@ -10,8 +10,16 @@ namespace cloris {
 
 const DocidNode PostingList::EOL(DN_BAD_DOCID, false);
 
-PostingList::PostingList(const std::list<DocidNode>* pl) : doc_list_(pl) {
+PostingList::PostingList(std::list<DocidNode>* pl, ReclaimHandler handler) 
+    : doc_list_(pl), 
+      handler_(handler) {
     iter_ = doc_list_->begin();
+}
+
+PostingList::~PostingList() { 
+    if (handler_) { 
+        handler_(doc_list_); 
+    }
 }
 
 bool PostingList::operator < (const PostingList& pl) const {

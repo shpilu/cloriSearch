@@ -13,23 +13,25 @@
 #define DN_BAD_DOCID -31415926 
 
 #include <list>
+#include <functional>
 #include "inverted_list.h"
 
 namespace cloris {
 
+typedef std::function<void(std::list<DocidNode>*)> ReclaimHandler;
+
 class PostingList {
 public:
     const static DocidNode EOL;
-
-    PostingList(const std::list<DocidNode>* pl);
-    ~PostingList() { }
-
+    PostingList(std::list<DocidNode>* pl, ReclaimHandler handler);
+    ~PostingList(); 
     bool operator < (const PostingList& pl) const ; 
     const DocidNode& CurrentEntry() const;
     void SkipTo(int docid);
 private:
-    const std::list<DocidNode>* doc_list_;
-    std::list<DocidNode>::const_iterator iter_;
+    std::list<DocidNode>* doc_list_;
+    ReclaimHandler handler_;
+    std::list<DocidNode>::iterator iter_;
 };
 
 } // namespace cloris

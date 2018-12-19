@@ -7,6 +7,7 @@
 #include "internal/singleton.h"
 #include "simple_indexer.h"
 #include "interval_indexer.h"
+#include "geo_indexer.h"
 #include "indexer_factory.h"
 
 #define INDEX_TYPE_SIMPLE       "simple"
@@ -42,6 +43,8 @@ Indexer* IndexerFactory::CreateIndexer(const std::string& name, const std::strin
         } else {
             return NULL;
         }
+    } else if (index_type == INDEX_TYPE_GEO) {
+        return new GeoIndexer(name);
     } else {
         return NULL;
     }

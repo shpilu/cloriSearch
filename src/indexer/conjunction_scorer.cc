@@ -10,8 +10,8 @@
 
 namespace cloris {
 
-void ConjunctionScorer::AddPostingList(const std::list<DocidNode>* doc_list) {
-    PostingList pl(doc_list);
+void ConjunctionScorer::AddPostingList(std::list<DocidNode>* doc_list, const ReclaimHandler& handler) {
+    PostingList pl(doc_list, handler);
     plists_.push_back(pl);
 }
 

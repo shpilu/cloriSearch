@@ -1,0 +1,15 @@
+{
+    "mode":"stanard",
+    "docid":2,
+    "disjunctions":[{
+        "conjunctions":[{
+            "name":"location",
+            "value":{
+                "geo":{
+                    "lon":116.397517,
+                    "lat":39.908018
+                }
+            }
+        }]
+    }]
+}

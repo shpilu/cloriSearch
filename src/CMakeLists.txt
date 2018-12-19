@@ -80,6 +80,10 @@ set(TUTORIAL_INTERVAL_SOURCES ${PROJECT_SOURCE_DIR}/src/example/tutorial_interva
 add_executable(tutorial_interval ${TUTORIAL_INTERVAL_SOURCES})
 target_link_libraries(tutorial_interval clorisearch-shared protobuf)
 
+set(TUTORIAL_GEO_SOURCES ${PROJECT_SOURCE_DIR}/src/example/tutorial_geo.cc)
+add_executable(tutorial_geo ${TUTORIAL_GEO_SOURCES})
+target_link_libraries(tutorial_geo clorisearch-shared protobuf)
+
 file(COPY ${PROJECT_SOURCE_DIR}/bin/
     DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 

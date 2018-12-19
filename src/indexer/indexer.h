@@ -9,6 +9,7 @@
 
 #include <list>
 #include "inverted_index.pb.h"
+#include "posting_list.h"
 #include "term.h"
 
 namespace cloris {
@@ -19,10 +20,12 @@ public:
     virtual ~Indexer() { }
     virtual bool ParseTermsFromConjValue(std::vector<Term>& terms, const ConjValue& value) = 0; 
     virtual bool Add(const ConjValue& value, bool is_belong_to, int docid) = 0;
-    virtual const std::list<DocidNode>* GetPostingLists(const Term& term) = 0;
+    virtual std::list<DocidNode>* GetPostingLists(const Term& term) = 0;
+    const ReclaimHandler& reclaim_handler() const { return reclaim_handler_; }
 protected:
     std::string name_;
     ValueType type_;
+    ReclaimHandler reclaim_handler_;
 private:
 
 };

@@ -23,15 +23,25 @@ GeoIndexer::~GeoIndexer() {
 bool GeoIndexer::Add(const Term& term, bool is_belong_to, int docid) {
     /* Turn the coordinates into the score of the element. */
     GeoHashBits hash;
-    geohashEncodeWGS84(term.longitude(), term.latitude(), GEO_STEP_MAX, &hash);
+    double lon = term.longitude();
+    double lat = term.latitude();
+
+    // geohashEncodeWGS84(term.longitude(), term.latitude(), GEO_STEP_MAX, &hash);
+    geohashEncodeWGS84(lon, lat, GEO_STEP_MAX, &hash);
     GeoHashFix52Bits bits = geohashAlign52Bits(hash);
     // add to skip_list
     GeoNode node(bits);
     typename goodliffe::skip_list<GeoNode>::iterator iter = inverted_lists_.find(node);
     // not found
     if (iter == inverted_lists_.end()) {
+        cLog(DEBUG, "inverted_lists_ not found");
         node.Add(is_belong_to, docid);
-        inverted_lists_.insert(node);
+        typename goodliffe::skip_list<GeoNode>::insert_by_value_result insert_rslt = inverted_lists_.insert(node);
+        if (insert_rslt.second) {
+            cLog(DEBUG, "skip_list insert success, node=");
+        } else {
+            cLog(DEBUG, "skip_list insert failed");
+        }
     } else {
         iter->Add(is_belong_to, docid);
     }
@@ -70,11 +80,14 @@ void geoAppendIfWithinRadius(std::list<DocidNode>* lptr, double lon, double lat,
     double distance, xy[2];
     double score = cur_node.geo_bits();
     if (!decodeGeohash(score, xy)) {
+        cLog(DEBUG, "docodeGeohash failed");
         return;
     }
     if (!geohashGetDistanceIfInRadiusWGS84(lon,lat, xy[0], xy[1], radius, &distance)) {
+        cLog(DEBUG, "getDistancec failed, distance=%f", distance);
         return;
     }
+    cLog(DEBUG, "getDistancec succcess, distance=%f", distance);
     for (auto& p : cur_node.list().doc_list()) {
         lptr->push_back(p);
     } 
@@ -98,13 +111,21 @@ void GeoIndexer::GetGeoPointsInRange(GeoHashFix52Bits min, GeoHashFix52Bits max,
     GeoNode min_node(min);
     GeoNode max_node(max);
     typename goodliffe::skip_list<GeoNode>::iterator iter = inverted_lists_.find_first_in_range(min_node, max_node);
-    
+
+    if (iter == this->inverted_lists_.end()) {
+        cLog(DEBUG, "node in range NOT found");
+    } else {
+        cLog(DEBUG, "node in range DO found");
+    }
+
     while (iter != this->inverted_lists_.end()) {
         if (*iter >= max_node) {
+            cLog(DEBUG, "node overflow");
             break;
         }
+        cLog(DEBUG, "node in MATCH");
+        geoAppendIfWithinRadius(lptr, lon, lat, radius, *iter);
         ++iter;
-        geoAppendIfWithinRadius(lptr, lon, lat, radius, iter->geo_bits());
     }
 }
 
@@ -146,9 +167,8 @@ void GeoIndexer::GetMembersOfGeoHashBox(GeoHashBits hash, std::list<DocidNode> *
     GetGeoPointsInRange(min, max, lon, lat, radius, lptr);
 }
 
-
 /* Search all eight neighbors + self geohash box */
-void GeoIndexer::GetMembersOfAllNeighbors(GeoHashRadius n, double lon, double lat, double radius, std::list<DocidNode>* lptr) {
+void GeoIndexer::GetMembersOfAllNeighbors(const GeoHashRadius& n, double lon, double lat, double radius, std::list<DocidNode>* lptr) {
     GeoHashBits neighbors[9];
     unsigned int i, last_processed = 0;
 
@@ -199,7 +219,13 @@ std::list<DocidNode>* GeoIndexer::GetPostingLists(const Term& term) {
     /* Search the skip_list for all matching points */
     std::list<DocidNode>* lptr = new (std::list<DocidNode>);
     this->GetMembersOfAllNeighbors(georadius, longitude, latitude, radius_mters, lptr); 
-    return lptr;
+    // TODO a better implementation
+    if (lptr->size() > 0) {
+        return lptr;
+    } else {
+        delete lptr;
+        return NULL;
+    }
 }
 
 } // namespace cloris

@@ -56,12 +56,13 @@ bool IndexerManager::Add(const Disjunction& disjunction, int docid) {
 void IndexerManager::GetPostingLists(const Query& query, ConjunctionScorer& scorer) {
     for (auto& term : query) {
         if (indexer_table_.find(term.name()) != indexer_table_.end()) {
+            cLog(DEBUG, "term ==> %s", term.print().c_str());
             std::list<DocidNode>* doc_list = indexer_table_[term.name()]->GetPostingLists(term);
             if (doc_list) {
                 scorer.AddPostingList(doc_list, indexer_table_[term.name()]->reclaim_handler());
-                cLog(INFO, "GetPostingLists, [conjs=%d, name=%s, value=%s, found", conjunctions_, term.name().c_str(), term.value().c_str());
+                cLog(INFO, "GetPostingLists, [conjs=%d, term:%s, found", conjunctions_, term.print().c_str());
             } else {
-                cLog(INFO, "GetPostingLists, [conjs=%d, name=%s, value=%s, NOT found", conjunctions_, term.name().c_str(), term.value().c_str());
+                cLog(INFO, "GetPostingLists, [conjs=%d, term:%s, NOT found", conjunctions_, term.print().c_str());
             }
         }
     }

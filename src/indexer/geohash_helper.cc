@@ -203,6 +203,7 @@ GeoHashRadius geohashGetAreasByRadiusWGS84(double longitude, double latitude,
 
 GeoHashFix52Bits geohashAlign52Bits(const GeoHashBits hash) {
     uint64_t bits = hash.bits;
+    // 剩余位填0
     bits <<= (52 - hash.step * 2);
     return bits;
 }

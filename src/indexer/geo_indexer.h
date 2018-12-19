@@ -48,7 +48,7 @@ public:
 private:
     bool Add(const Term& term, bool is_belong_to, int docid); 
     void GetMembersOfGeoHashBox(GeoHashBits hash, std::list<DocidNode> *lptr, double lon, double lat, double radius);
-    void GetMembersOfAllNeighbors(GeoHashRadius n, double lon, double lat, double radius, std::list<DocidNode>* lptr); 
+    void GetMembersOfAllNeighbors(const GeoHashRadius& n, double lon, double lat, double radius, std::list<DocidNode>* lptr); 
     GeoIndexer() = delete;
     goodliffe::skip_list<GeoNode> inverted_lists_;
 };

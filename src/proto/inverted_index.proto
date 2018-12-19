@@ -32,8 +32,8 @@ message DoubleInterval {
 };
 
 message Geo {
-    required float longitude = 1;
-    required float latitude  = 2;
+    required float lon = 1;
+    required float lat = 2;
 };
 
 message ConjValue {
@@ -91,7 +91,7 @@ message DNF {
 //         },{
 //             "name":"location",
 //             "value":{
-//                 "geo":{"longitude":36.1213, "latitude":45.31}
+//                 "geo":{"lon":36.1213, "lat":45.31}
 //             }
 //         },{
 //             "name":"age",

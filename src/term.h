@@ -25,11 +25,19 @@ enum ValueType {
     INT32    = 0x00000002,
     DOUBLE   = 0x00000004,
     STRING   = 0x00000008,
+    GEORANGE = 0x0000000f,
     MIN_INTERVAL_TYPE = 0x00010002,
     INT32_INTERVAL =  0x00010002,
     DOUBLE_INTERVAL = 0x00010004,
     STRING_INTERVAL = 0x00010008,
     MAX_INTERVAL_TYPE = 0x00010008,
+};
+
+struct  GeoRange {
+    GeoRange(double lon, double lat, int32_t _radius = 0) : longitude(lon), latitude(lat), radius(_radius) {}
+    double longitude; 
+    double latitude;
+    int32_t radius; // in meter
 };
 
 class Term {
@@ -38,11 +46,12 @@ public:
     Term(const std::string&, int32_t);
     Term(const std::string&, bool);
     Term(const std::string&, const std::string&);
+    Term(const GeoRange& geo_range);
     // Interval Expression and Encoding
     Term(const std::string&, int32_t, int32_t, int32_t);
     Term(const std::string&, double, double, int32_t);
     Term(const std::string&, const std::string&, const std::string&, int32_t);
-    ~Term() { }
+    ~Term() {}
 
     Term& operator=(int32_t val);
     Term& operator=(bool val);
@@ -57,6 +66,9 @@ public:
     const void* data() const { return &value_[0]; }
     const void* left(size_t *llen = NULL) const ;
     const void* right(size_t *rlen = NULL) const;
+    double longitude() const { return *reinterpret_cast<double*>(value_[0]); }
+    double latitude()  const { return *reinterpret_cast<double*>(value_[sizeof(double)]); }
+    int32_t radius()   const { return *reinterpret_cast<int32_t*>(value_[sizeof(double) * 2]); }
     std::string print() const;
 
     // unsafe method, used only for XX_INTERVAL type

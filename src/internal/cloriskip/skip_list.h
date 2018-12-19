@@ -205,6 +205,8 @@ public:
     size_type      count(const value_type &value) const;
 
     iterator       find(const value_type &value);
+    iterator       find_first_in_range(const value_type& min, const value_type& max);
+    const_iterator find_first_in_range(const value_type& min, const value_type& max) const;
     iterator       find_first(const value_type &value);
     const_iterator find(const value_type &value) const;
     const_iterator find_first(const value_type &value) const;
@@ -227,6 +229,7 @@ public:
 protected:
     impl_type impl;
 
+
     iterator to_iterator(node_type *node, const value_type &value)
     {
         return impl.is_valid(node) && detail::equivalent(node->value, value, impl.less)
@@ -238,6 +241,12 @@ protected:
         return impl.is_valid(node) && detail::equivalent(node->value, value, impl.less)
             ? const_iterator(&impl, node)
             : end();
+    }
+    iterator to_iterator(node_type *node) {
+        return impl.is_valid(node) ? iterator(&impl, node) : end();
+    }
+    const_iterator to_iterator(node_type *node) const {
+        return impl.is_valid(node) ? const_iterator(&impl, node) : end();
     }
 };
     
@@ -752,6 +761,23 @@ skip_list<T,C,A,LG,D>::find(const value_type &value)
     node_type *node = impl.find(value);
     return to_iterator(node, value);
 }
+
+template <class T, class C, class A, class LG, bool D>
+inline
+typename skip_list<T,C,A,LG,D>::iterator
+skip_list<T,C,A,LG,D>::find_first_in_range(const value_type &min, const value_type& max) {
+    node_type *node = impl.find_first_in_range(min, max);
+    return to_iterator(node);
+}
+
+template <class T, class C, class A, class LG, bool D>
+inline
+typename skip_list<T,C,A,LG,D>::const_iterator
+skip_list<T,C,A,LG,D>::find_first_in_range(const value_type &min, const value_type& max) const {
+    node_type *node = impl.find_first_in_range(min, max);
+    return to_iterator(node);
+}
+
   
 template <class T, class C, class A, class LG, bool D>
 inline
@@ -969,6 +995,7 @@ public:
     node_type       *one_past_end()                        { return tail; }
     const node_type *one_past_end() const                  { return tail; }
     node_type       *find(const value_type &value) const;
+    node_type       *find_first_in_range(const value_type &min, const value_type& max) const;
     node_type       *find_first_match(const value_type &value) const;
     node_type       *find_first(const value_type &value) const;
     node_type       *insert(const value_type &value, node_type *hint = 0);
@@ -1083,6 +1110,7 @@ sl_impl<T,C,A,LG,D>::count(const value_type &value) const
     return count;
 }
 
+// 如果没有找到，则返回仅次于目标值的节点
 template <class T, class C, class A, class LG, bool D>
 inline
 typename sl_impl<T,C,A,LG,D>::node_type *
@@ -1129,6 +1157,26 @@ sl_impl<T,C,A,LG,D>::find_first_match(const value_type &value) const {
     return search;
 }
 
+// try to find the first node in [min, max)
+template <class T, class C, class A, class LG, bool D>
+inline
+typename sl_impl<T,C,A,LG,D>::node_type *
+sl_impl<T,C,A,LG,D>::find_first_in_range(const value_type &min, const value_type& max) const {
+    impl_assert_that(D);
+    node_type *node = find(min);
+    
+    // this loop may cause 'head == node'
+    while (node != head && detail::equivalent(node->prev->value, min, less)) {
+        node = node->prev;
+    }
+    if ((node == head) || less(node->value, min)) {
+        node = node->next[0];
+    }
+    if (node == tail || detail::less_or_equal(max, node->value, less)) {
+        return head;
+    }
+    return node;
+}
 
 template <class T, class C, class A, class LG, bool D>
 inline

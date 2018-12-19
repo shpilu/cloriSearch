@@ -66,7 +66,7 @@ Term::Term(const std::string& name, double left, double right, int32_t flag) : n
 };
 
 //
-// the encoding if string interval is
+// the encoding of string interval is
 // | char | size_t | string | size_t | string |
 // --------------------------------------------
 // | flag |  len1  |  left  |  len2  | right  |
@@ -81,6 +81,19 @@ Term::Term(const std::string& name, const std::string& left, const std::string& 
     memcpy(&value_[sizeof(char) + sizeof(size_t) * 2 + left.length()], right.data(), right.length());
     type_ = ValueType::STRING_INTERVAL;
 };
+
+//
+// the encoding of geo range is
+// |   double   |   double  | int32_t | 
+// | longitude | latitude | radius  |
+Term::Term(const GeoRange& geo_range) {
+    size_t len = sizeof(int32_t) + sizeof(double) * 2;
+    value_.reserve(len);
+    *(reinterpret_cast<double*>(value_[0])) = geo_range.longitude;
+    *(reinterpret_cast<double*>(value_[sizeof(double)])) = geo_range.latitude;
+    *(reinterpret_cast<int32_t*>(value_[sizeof(double) * 2])) = geo_range.radius;
+    type_ = ValueType::GEORANGE;
+}
 
 Term& Term::operator=(int32_t val) {
     if (value_.size() > sizeof(int32_t)) {

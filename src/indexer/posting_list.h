@@ -28,6 +28,7 @@ public:
     bool operator < (const PostingList& pl) const ; 
     const DocidNode& CurrentEntry() const;
     void SkipTo(int docid);
+    void ReclaimDocList();
 private:
     std::list<DocidNode>* doc_list_;
     ReclaimHandler handler_;
@@ -37,3 +38,4 @@ private:
 } // namespace cloris
 
 #endif // CLORIS_POSTING_LIST_H_
+

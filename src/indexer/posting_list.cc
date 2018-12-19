@@ -17,8 +17,11 @@ PostingList::PostingList(std::list<DocidNode>* pl, ReclaimHandler handler)
 }
 
 PostingList::~PostingList() { 
-    if (handler_) { 
-        handler_(doc_list_); 
+}
+
+void PostingList::ReclaimDocList() {
+    if (handler_) {
+        handler_(doc_list_);
     }
 }
 

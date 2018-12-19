@@ -34,10 +34,10 @@ enum ValueType {
 };
 
 struct  GeoRange {
-    GeoRange(double lon, double lat, int32_t _radius = 0) : longitude(lon), latitude(lat), radius(_radius) {}
+    GeoRange(double lon, double lat, double _radius = 0) : longitude(lon), latitude(lat), radius(_radius) {}
     double longitude; 
     double latitude;
-    int32_t radius; // in meter
+    double radius; // in meter
 };
 
 class Term {
@@ -46,6 +46,7 @@ public:
     Term(const std::string&, int32_t);
     Term(const std::string&, bool);
     Term(const std::string&, const std::string&);
+    Term(const Term& t);
     Term(const GeoRange& geo_range);
     // Interval Expression and Encoding
     Term(const std::string&, int32_t, int32_t, int32_t);
@@ -57,6 +58,7 @@ public:
     Term& operator=(bool val);
     Term& operator=(const char* val);
     Term& operator=(const std::string& val);
+    Term& operator=(const GeoRange& geo_range);
     bool operator==(const Term& t) const;
 
     ValueType type() const { return type_; }
@@ -66,18 +68,20 @@ public:
     const void* data() const { return &value_[0]; }
     const void* left(size_t *llen = NULL) const ;
     const void* right(size_t *rlen = NULL) const;
-    double longitude() const { return *reinterpret_cast<double*>(value_[0]); }
-    double latitude()  const { return *reinterpret_cast<double*>(value_[sizeof(double)]); }
-    int32_t radius()   const { return *reinterpret_cast<int32_t*>(value_[sizeof(double) * 2]); }
+    double longitude() const { return *reinterpret_cast<const double*>(&value_[0]); }
+    double latitude()  const { return *reinterpret_cast<const double*>(&value_[sizeof(double)]); }
+    double radius()   const { return *reinterpret_cast<const double*>(&value_[sizeof(double) * 2]); }
     std::string print() const;
 
     // unsafe method, used only for XX_INTERVAL type
     int32_t flag() const { char p = value_[0]; return p; }
+    size_t size() const { return size_; }
 
 private:
     Term() = delete;
     ValueType type_;
     std::string name_;
+    size_t size_;
     std::string value_;
 };
 

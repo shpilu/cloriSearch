@@ -13,22 +13,34 @@ namespace cloris {
 Term::Term(const std::string& name) 
     : type_(ValueType::NONE), 
       name_(name),
+      size_(0),
       value_("") {
 }
 
 Term::Term(const std::string& name, int32_t val) : name_(name) {
     value_.assign(reinterpret_cast<char*>(&val), sizeof(int32_t));
     type_ = ValueType::INT32;
+    size_ = sizeof(int32_t);
 }
 
 Term::Term(const std::string& name, bool val) : name_(name) {
     value_.assign(reinterpret_cast<char*>(&val), sizeof(bool));
     type_ = ValueType::BOOL;
+    size_ = sizeof(bool);
 }
 
 Term::Term(const std::string& name, const std::string& val) : name_(name) {
     value_.assign(val);
     type_ = ValueType::STRING;
+    size_ = val.size();
+}
+
+Term::Term(const Term& t) {
+    name_ = t.name();
+    type_ = t.type();
+    size_ = t.size();
+    value_.reserve(size_);
+    memcpy(&value_[0], t.data(), size_);
 }
 
 //
@@ -46,6 +58,7 @@ Term::Term(const std::string& name, int32_t left, int32_t right, int32_t flag) :
     value_.reserve(len);
     value_.assign(tmp, len);
     type_ = ValueType::INT32_INTERVAL;
+    size_ = len;
 };
 
 //
@@ -63,6 +76,7 @@ Term::Term(const std::string& name, double left, double right, int32_t flag) : n
     value_.reserve(len);
     value_.assign(tmp, len);
     type_ = ValueType::DOUBLE_INTERVAL;
+    size_ = len;
 };
 
 //
@@ -75,24 +89,37 @@ Term::Term(const std::string& name, const std::string& left, const std::string& 
     size_t len = sizeof(char) + sizeof(size_t) * 2 + left.length() + right.length();
     value_.reserve(len);
     value_[0] = flag & INTERVAL_FLAG_MASK;
-    *(reinterpret_cast<size_t*>(value_[sizeof(char)])) = left.length();
+    *(reinterpret_cast<size_t*>(&value_[sizeof(char)])) = left.length();
     memcpy(&value_[sizeof(char) + sizeof(size_t)], left.data(), left.length());
-    *(reinterpret_cast<size_t*>(value_[sizeof(char) + sizeof(size_t) + left.length()])) = right.length();
+    *(reinterpret_cast<size_t*>(&value_[sizeof(char) + sizeof(size_t) + left.length()])) = right.length();
     memcpy(&value_[sizeof(char) + sizeof(size_t) * 2 + left.length()], right.data(), right.length());
     type_ = ValueType::STRING_INTERVAL;
+    size_ = len;
 };
 
 //
 // the encoding of geo range is
-// |   double   |   double  | int32_t | 
+// |   double   |   double  | double | 
 // | longitude | latitude | radius  |
 Term::Term(const GeoRange& geo_range) {
-    size_t len = sizeof(int32_t) + sizeof(double) * 2;
+    size_t len = sizeof(double) * 3;
     value_.reserve(len);
-    *(reinterpret_cast<double*>(value_[0])) = geo_range.longitude;
-    *(reinterpret_cast<double*>(value_[sizeof(double)])) = geo_range.latitude;
-    *(reinterpret_cast<int32_t*>(value_[sizeof(double) * 2])) = geo_range.radius;
+    *(reinterpret_cast<double*>(&value_[0])) = geo_range.longitude;
+    *(reinterpret_cast<double*>(&value_[sizeof(double)])) = geo_range.latitude;
+    *(reinterpret_cast<double*>(&value_[sizeof(double) * 2])) = geo_range.radius;
     type_ = ValueType::GEORANGE;
+    size_ = len;
+}
+
+Term& Term::operator=(const GeoRange& geo_range) {
+    size_t len = sizeof(double) * 3;
+    value_.reserve(len);
+    *(reinterpret_cast<double*>(&value_[0])) = geo_range.longitude;
+    *(reinterpret_cast<double*>(&value_[sizeof(double)])) = geo_range.latitude;
+    *(reinterpret_cast<double*>(&value_[sizeof(double) * 2])) = geo_range.radius;
+    type_ = ValueType::GEORANGE;
+    size_ = len;
+    return *this;
 }
 
 Term& Term::operator=(int32_t val) {
@@ -101,6 +128,7 @@ Term& Term::operator=(int32_t val) {
     }
     value_.assign(reinterpret_cast<char*>(&val), sizeof(int32_t));
     type_ = ValueType::INT32;
+    size_ = sizeof(int32_t);
     return *this;
 }
 
@@ -110,6 +138,7 @@ Term& Term::operator=(bool val) {
     }
     value_.assign(reinterpret_cast<char*>(&val), sizeof(bool));
     type_ = ValueType::BOOL;
+    size_ = sizeof(bool);
     return *this;
 }
 
@@ -117,12 +146,14 @@ Term& Term::operator=(bool val) {
 Term& Term::operator=(const char* val) {
     value_.assign(val);
     type_ = ValueType::STRING;
+    size_ = value_.size();
     return *this;
 }
 
 Term& Term::operator=(const std::string& val) {
     value_.assign(val);
     type_ = ValueType::STRING;
+    size_ = value_.size();
     return *this;
 }
 
@@ -212,6 +243,11 @@ std::string Term::print() const {
             ss << std::string(&value_[1 + sizeof(size_t)], len1) << ", ";
             ss << std::string(&value_[1 + sizeof(size_t) * 2 + len1], len2);
             ss << ((value_[0] & INTERVAL_RIGHT_MASK) ? "]" : ")");
+            break;
+        case GEORANGE:
+            ss << "{\"longitude\":" << *reinterpret_cast<const double*>(&value_[0]) << ", ";
+            ss << "\"latitude\":"   << *reinterpret_cast<const double*>(&value_[sizeof(double)]) << ", ";
+            ss << "\"radius\":"     << *reinterpret_cast<const double*>(&value_[sizeof(double) * 2]) << "}";
             break;
         default:
             ss << "BAD_TERM";

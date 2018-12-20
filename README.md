@@ -32,10 +32,10 @@ cloriSearch在设计与工程实现上参考了多个开源项目与相关论文
 
 此外，还部分参考了大型互联网公司的广告检索技术实现，包括
 
-* 阿里妈妈*[通用广告引擎的索引设计和性能优化](http://60.205.189.117/%E9%80%9A%E7%94%A8%E5%B9%BF%E5%91%8A%E5%BC%95%E6%93%8E%E7%9A%84%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E5%92%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.pdf)* 
-* 广点通*[下一代的全能广告系统架构](http://djt.qq.com/article/view/1556)*
-* 美团*[美团点评广告实时索引的设计与实现](https://blog.csdn.net/MeituanTech/article/details/80415658)*
-* 360*[如何打造高质量的SSP广告引擎](https://blog.csdn.net/ZVAyIVqt0UFji/article/details/78934524)*
+* 阿里妈妈 *[通用广告引擎的索引设计和性能优化](http://60.205.189.117/%E9%80%9A%E7%94%A8%E5%B9%BF%E5%91%8A%E5%BC%95%E6%93%8E%E7%9A%84%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E5%92%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.pdf)* 
+* 广点通 *[下一代的全能广告系统架构](http://djt.qq.com/article/view/1556)*
+* 美团 *[美团点评广告实时索引的设计与实现](https://blog.csdn.net/MeituanTech/article/details/80415658)*
+* 360 *[如何打造高质量的SSP广告引擎](https://blog.csdn.net/ZVAyIVqt0UFji/article/details/78934524)*
 
 ## 使用实例<div id="usage"></div>
 

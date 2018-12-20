@@ -151,7 +151,7 @@ for (auto &p : res) {
 
 ## 安装<div id="install"></div>
 
-cloriSearch使用C++开发，你可以照以下方式安装
+cloriSearch使用C++开发，你可以按照以下方式安装
 
 ```C++
 mkdir build && cd build

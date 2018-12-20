@@ -58,7 +58,7 @@ cloriSearch在设计与工程实现上参考了多个开源项目与相关论文
         {
             "name": "gender",
             "key_type": "string",
-            "index_type": "interval"
+            "index_type": "simple"
         },
         {
             "name": "location",
@@ -83,7 +83,7 @@ cloriSearch目前只支持析取范式格式的倒排写入(具体proto定义参
         "conjunctions": [{
             "name": "city",
             "value": {
-                "sval": ["beijing", "shanghai", "shenzhen"]
+                "sval": ["beijing", "shanghai", "guangzhou", "shenzhen"]
             }
         }, {
             "name": "age",

@@ -37,9 +37,7 @@ cloriSearch在设计与工程实现上参考了多个开源项目与相关论文
 * 美团 *[美团点评广告实时索引的设计与实现](https://blog.csdn.net/MeituanTech/article/details/80415658)*
 * 360 *[如何打造高质量的SSP广告引擎](https://blog.csdn.net/ZVAyIVqt0UFji/article/details/78934524)*
 
-cloriSearch目前只支持全量索引与倒排检索，正排索引、增量索引、广告Rank与过滤等功能尚在开发中。
-
-cloriSearch索引结构的protobuf定义为(src/prot/index_schema.proto)
+cloriSearch索引结构的proto定义为(文件位于src/prot/index_schema.proto)
 ```proto
 message IndexSchema {
     message Term {
@@ -49,10 +47,119 @@ message IndexSchema {
     };
     repeated Term terms = 1;
 };
+```
 
 ## 实例<div id="usage"></div>
 
+* 1.定义索引结构
+
+在使用cloriSearch之前，需要定义索引结构，比如要支持城市、性别、年龄、地理位置等四个定向维度的索引结构定义为
+```json
+{
+    "terms": [{
+            "name": "city",
+            "key_type": "string",
+            "index_type": "simple"
+        },
+        {
+            "name": "age",
+            "key_type": "int32",
+            "index_type": "interval"
+        },
+        {
+            "name": "gender",
+            "key_type": "string",
+            "index_type": "interval"
+        },
+        {
+            "name": "location",
+            "key_type": "double",
+            "index_type": "geo"
+        }
+    ]
+}
+```
+可以根据业务需求随意增加定向维度。
+
+* 2.写入倒排数据
+
+cloriSearch目前只支持析取范式格式的倒排写入(具体proto定义参考src/proto/inverted_index.proto)，比如一条docid=1，定向北上广深、年龄在[18，25]之间的女性用户投放的广告倒排描述为
+
+```json
+// docid=1，定向北上广深、年龄在[18，25]之间的女性用户
+{
+    "mode": "stanard",
+    "docid": 1,
+    "disjunctions": [{
+        "conjunctions": [{
+            "name": "city",
+            "value": {
+                "sval": ["beijing", "shanghai", "shenzhen"]
+            }
+        }, {
+            "name": "age",
+            "value": {
+                "int32_intvl": [{
+                    "left": 20,
+                    "right": 30,
+                    "flag": 3
+                }]
+            }
+        }, {
+            "name": "gendor",
+            "value": {
+                "sval": ["female"]
+            }
+        }]
+    }]
+}
+
+// docid=3, 定投国贸周边的男性用户
+{
+    "mode": "stanard",
+    "docid": 3,
+    "disjunctions": [{
+        "conjunctions": [{
+            "name": "location",
+            "value": {
+                "geo": {
+                    "lon": 116.461805,
+                    "lat": 39.909005
+                }
+            }
+        }, {
+            "name": "gender",
+            "value": {
+                "sval": ["male"]
+            }
+        }]
+    }]
+}
+```
+
+3. 检索匹配的广告
+
+比如要检索一位年龄在20岁、位于北京市经纬度坐标(116.400693, 39.907688)的女学生所命中的广告(LBS定向半径1km)，其检索式为
+
+```C++
+Query query;
+query["city"] = "beijing";
+query["age"] = 20; 
+query["gendor"] = "female";
+query["is_student"] = true;
+query["location"] = GeoRange(116.400693, 39.907688, 1000);
+
+std::vector<int> res = sch->Search(query, 10);
+for (auto &p : res) {                                                                                                                 
+    std::cout << "docid=" << p << std::endl;
+} 
+
+```
+具体代码实现可以参考src/example/tutorial_*.cc中的教程
+
 ## 安装<div id="install"></div>
+
+cloriSearch是用C++写的检索引擎内核，你可以直接拷贝代码到你的项目中，或者按照以下方式安装
 
 ```C++
 mkdir build && cd build
@@ -61,6 +168,8 @@ make
 sudo make install
 
 ## 待完成列表
+
+cloriSearch目前只支持全量索引与倒排检索，正排索引、增量索引、广告Rank与过滤等功能尚在开发中，另外还没考虑程序性能问题，将在后续优化改进。
 
 ## 作者 <div id="authors"></div>
 

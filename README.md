@@ -3,12 +3,12 @@
 cloriSearch<div id="top"></div>
 ==========
 
-cloriSearch是一套为在线广告设计的检索引擎内核，cloriSearch致力于解决常规业务开发中的策略检索与在线广告匹配问题，为中小互联网公司商业化提供一套开源的广告检索技术方案。
+cloriSearch是一套检索引擎内核，致力于解决常规业务开发中的策略检索与在线广告匹配问题，为中小互联网公司商业化提供一套开源的广告检索技术方案。
 
 * [主要特性](#features)
 * [设计思想](#design)
-* [使用实例](#usage)
-* [安装说明](#install)
+* [实例](#usage)
+* [安装](#install)
 * [待完成列表](#todo)
 * [作者](#authors)
 
@@ -20,7 +20,7 @@ cloriSearch目前支持简单倒排检索、范围检索、LBS检索等三种检
 * 范围检索 - 广告定向条件是一个数值区间，比如"时间从2018-12-01 00:00 ~ 2018-12-20 00:00"，"年龄在18 ~ 25之间的用户"，"流量序号在20 ~ 50之间"
 * LBS检索 - 基于地理位置(经纬度)的广告定向，比如检索出以某经纬度为圆心、某距离为半径圈定的圆形范围内的定投广告
 
-## 设计之路<div id="design"></div>
+## 设计思想<div id="design"></div>
 
 cloriSearch在设计与工程实现上参考了多个开源项目与相关论文，包括
 
@@ -37,11 +37,28 @@ cloriSearch在设计与工程实现上参考了多个开源项目与相关论文
 * 美团 *[美团点评广告实时索引的设计与实现](https://blog.csdn.net/MeituanTech/article/details/80415658)*
 * 360 *[如何打造高质量的SSP广告引擎](https://blog.csdn.net/ZVAyIVqt0UFji/article/details/78934524)*
 
-## 使用实例<div id="usage"></div>
+cloriSearch目前只支持全量索引与倒排检索，正排索引、增量索引、广告Rank与过滤等功能尚在开发中。
 
+cloriSearch索引结构的protobuf定义为(src/prot/index_schema.proto)
+```proto
+message IndexSchema {
+    message Term {
+        required string name = 1; // age, sex, id...
+        required string key_type = 2; // string, int32, bool, float, geo
+        required string index_type = 3; // simple, interval, geohash
+    };
+    repeated Term terms = 1;
+};
 
-## 安装说明<div id="install"></div>
+## 实例<div id="usage"></div>
 
+## 安装<div id="install"></div>
+
+```C++
+mkdir build && cd build
+cmake ..
+make
+sudo make install
 
 ## 待完成列表
 

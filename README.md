@@ -5,8 +5,8 @@ cloriSearch<div id="top"></div>
 
 cloriSearch是一套检索引擎内核，致力于解决常规业务开发中的策略检索与在线广告匹配问题，为中小互联网公司商业变现提供一套开源的广告检索技术解决方案。
 
-除了广告检索以外，cloriSearch也可以作为规则引擎使用，应用于基于内容的策略发布/订阅系统中(content-based publish/
-subscribe systems，即根据输入参数调度执行相应的策略)，比如一般业务系统中的ABtest、流量调度、策略匹配等模块。
+除了广告检索以外，cloriSearch也可以作为规则引擎，应用于基于内容的策略发布/订阅系统中(content-based publish/
+subscribe systems，即根据输入参数调度执行相应的策略)，比如一般业务系统中的ABtest、调度引擎、策略匹配等模块。
 
 * [主要特性](#features)
 * [设计思想](#design)

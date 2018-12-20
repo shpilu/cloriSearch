@@ -148,7 +148,7 @@ for (auto &p : res) {
 
 ## 安装<div id="install"></div>
 
-cloriSearch是用C++写的检索引擎内核，你可以直接拷贝代码到你的项目中，或者按照以下方式安装
+cloriSearch是用C++写的检索引擎内核，你可以照以下方式安装
 
 ```C++
 mkdir build && cd build
@@ -156,6 +156,8 @@ cmake ..
 make
 sudo make install
 ```
+也可以直接拷贝代码到你的项目中并加以改进，以适配你的业务需求。
+
 ## 待完成列表
 
 cloriSearch目前只支持全量索引与倒排检索，正排索引、增量索引、广告Rank与过滤等功能尚在开发中，另外还程序性能、对外接口等还有待斟酌，将在后续优化改进。

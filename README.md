@@ -37,23 +37,12 @@ cloriSearch在设计与工程实现上参考了多个开源项目与相关论文
 * 美团 *[美团点评广告实时索引的设计与实现](https://blog.csdn.net/MeituanTech/article/details/80415658)*
 * 360 *[如何打造高质量的SSP广告引擎](https://blog.csdn.net/ZVAyIVqt0UFji/article/details/78934524)*
 
-cloriSearch索引结构的proto定义为(文件位于src/prot/index_schema.proto)
-```proto
-message IndexSchema {
-    message Term {
-        required string name = 1; // age, sex, id...
-        required string key_type = 2; // string, int32, bool, float, geo
-        required string index_type = 3; // simple, interval, geohash
-    };
-    repeated Term terms = 1;
-};
-```
-
 ## 实例<div id="usage"></div>
 
 * 1.定义索引结构
 
-在使用cloriSearch之前，需要定义索引结构，比如要支持城市、性别、年龄、地理位置等四个定向维度的索引结构定义为
+在使用cloriSearch之前，需要定义索引结构(具体proto定义参考src/proto/inverted_index.proto)，比如要支持城市、性别、年龄、地理位置等四个定向维度的索引结构定义为
+
 ```json
 {
     "terms": [{
@@ -83,10 +72,10 @@ message IndexSchema {
 
 * 2.写入倒排数据
 
-cloriSearch目前只支持析取范式格式的倒排写入(具体proto定义参考src/proto/inverted_index.proto)，比如一条docid=1，定向北上广深、年龄在[18，25]之间的女性用户投放的广告倒排描述为
+cloriSearch目前只支持析取范式格式的倒排写入(具体proto定义参考src/proto/inverted_index.proto)，比如一条docid=1，定向北上广深、年龄在[18, 25]之间的女性用户投放的广告倒排描述为
 
 ```json
-// docid=1，定向北上广深、年龄在[18，25]之间的女性用户
+// docid=1，定向北上广深、年龄在[18, 25]之间的女性用户
 {
     "mode": "stanard",
     "docid": 1,
@@ -155,7 +144,7 @@ for (auto &p : res) {
 } 
 
 ```
-具体代码实现可以参考src/example/tutorial_*.cc中的教程
+具体代码实现可以参考src/example/tutorial_xxx.cc中的例子
 
 ## 安装<div id="install"></div>
 
@@ -166,7 +155,7 @@ mkdir build && cd build
 cmake ..
 make
 sudo make install
-
+```
 ## 待完成列表
 
 cloriSearch目前只支持全量索引与倒排检索，正排索引、增量索引、广告Rank与过滤等功能尚在开发中，另外还没考虑程序性能问题，将在后续优化改进。

@@ -57,7 +57,7 @@ bool GeoIndexer::ParseTermsFromConjValue(std::vector<Term>& terms, const ConjVal
     return true;
 }
 
-bool GeoIndexer::Add(const ConjValue& value, bool is_belong_to, int docid) {
+bool GeoIndexer::Add(const ConjValue& value, bool is_belong_to, int docid, bool is_incremental) {
     std::vector<Term> terms;
     this->ParseTermsFromConjValue(terms, value);
     for (auto &term : terms) {

@@ -129,7 +129,7 @@ public:
     ~IntervalIndexer();
     bool ParseTermsFromConjValue(std::vector<Term>& terms, const ConjValue& value);
     bool Add(const Term& term, bool is_belong_to, int docid);
-    virtual bool Add(const ConjValue& value, bool is_belong_to, int docid);
+    virtual bool Add(const ConjValue& value, bool is_belong_to, int docid, bool is_incremental);
     virtual std::list<DocidNode>* GetPostingLists(const Term& term);
 private:
     goodliffe::skip_list<IntervalNode<T, Compare>> inverted_lists_;
@@ -255,7 +255,7 @@ bool IntervalIndexer<T, C>::Add(const Term& term, bool is_belong_to, int docid) 
 
 // [10, 18), [20, 30)
 template<typename T, typename C>
-bool IntervalIndexer<T, C>::Add(const ConjValue& value, bool is_belong_to, int docid) {
+bool IntervalIndexer<T, C>::Add(const ConjValue& value, bool is_belong_to, int docid, bool is_incremental) {
     std::vector<Term> terms;
     this->ParseTermsFromConjValue(terms, value);
     for (auto &term : terms) {

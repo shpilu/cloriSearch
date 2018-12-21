@@ -19,7 +19,7 @@ public:
     Indexer(const std::string& name) : name_(name) {}
     virtual ~Indexer() { }
     virtual bool ParseTermsFromConjValue(std::vector<Term>& terms, const ConjValue& value) = 0; 
-    virtual bool Add(const ConjValue& value, bool is_belong_to, int docid) = 0;
+    virtual bool Add(const ConjValue& value, bool is_belong_to, int docid, bool is_incremental) = 0;
     virtual std::list<DocidNode>* GetPostingLists(const Term& term) = 0;
     const ReclaimHandler& reclaim_handler() const { return reclaim_handler_; }
 protected:

@@ -54,7 +54,7 @@ bool CloriSearch::Add(const std::string& source, IndexSchemaFormat format, bool 
         cLog(ERROR, "CloriSearch load failed:%s", err_msg.c_str());
         return false;
     }
-    inverted_index()->Add(dnf, false);
+    inverted_index()->Add(dnf, is_incremental);
     return true;
 }
 

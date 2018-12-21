@@ -19,7 +19,7 @@ public:
     SimpleIndexer(const std::string& name, ValueType type);
     ~SimpleIndexer();
     virtual bool ParseTermsFromConjValue(std::vector<Term>& terms, const ConjValue& value); 
-    virtual bool Add(const ConjValue& value, bool is_belong_to, int docid);
+    virtual bool Add(const ConjValue& value, bool is_belong_to, int docid, bool is_incremental);
     virtual std::list<DocidNode>* GetPostingLists(const Term& term);
 private:
     SimpleIndexer() = delete;

@@ -1,5 +1,5 @@
 //
-// indexer main class definition
+// wrapper of inverted list
 // version: 1.0 
 // Copyright (C) 2018 James Wei (weijianlhp@163.com). All rights reserved
 //

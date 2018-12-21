@@ -29,20 +29,20 @@ bool IndexerManager::DeclareTerm(const IndexSchema_Term& term) {
     return true;
 }
 
-bool IndexerManager::Add(const Conjunction& conjunction, int docid) {
+bool IndexerManager::Add(const Conjunction& conjunction, int docid, bool is_incremental) {
     if (indexer_table_.find(conjunction.name()) == indexer_table_.end()) {
         cLog(ERROR, "unsupported term:%s", conjunction.name().c_str());
         return false;
     } else {
         cLog(INFO, "add term to indexer[%s], conjunctions=%d", conjunction.name().c_str(), conjunctions_);
         bool is_belong_to = !conjunction.has_bt() || conjunction.bt();
-        return indexer_table_[conjunction.name()]->Add(conjunction.value(), is_belong_to, docid);
+        return indexer_table_[conjunction.name()]->Add(conjunction.value(), is_belong_to, docid, is_incremental);
     }
 }
 
-bool IndexerManager::Add(const Disjunction& disjunction, int docid) {
+bool IndexerManager::Add(const Disjunction& disjunction, int docid, bool is_incremental) {
     for (auto& conjunction : disjunction.conjunctions()) {
-        this->Add(conjunction, docid);
+        this->Add(conjunction, docid, is_incremental);
     }
     // special for Zero-index
     if (conjunctions_ == 0) {

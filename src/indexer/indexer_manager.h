@@ -22,8 +22,8 @@ public:
     IndexerManager(size_t conj);
     ~IndexerManager();
     bool DeclareTerm(const IndexSchema_Term& term);
-    bool Add(const Conjunction& conjunction, int docid);
-    bool Add(const Disjunction& disjunction, int docid);
+    bool Add(const Conjunction& conjunction, int docid, bool is_incremental);
+    bool Add(const Disjunction& disjunction, int docid, bool is_incremental);
     std::vector<int> Search(const Query& query, int limit);
     void GetPostingLists(const Query& query, ConjunctionScorer& scorer);
 private:

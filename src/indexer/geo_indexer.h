@@ -41,7 +41,7 @@ public:
     GeoIndexer(const std::string& name);
     ~GeoIndexer();
     virtual bool ParseTermsFromConjValue(std::vector<Term>& terms, const ConjValue& value); 
-    virtual bool Add(const ConjValue& value, bool is_belong_to, int docid);
+    virtual bool Add(const ConjValue& value, bool is_belong_to, int docid, bool is_incremental);
     virtual std::list<DocidNode>* GetPostingLists(const Term& term);
     void GetGeoPointsInRange(GeoHashFix52Bits min, GeoHashFix52Bits max, 
             double lon, double lat, double radius, std::list<DocidNode> *lptr);

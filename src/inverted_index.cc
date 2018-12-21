@@ -86,7 +86,7 @@ bool InvertedIndex::Add(const DNF& dnf, bool is_incremental) {
 bool InvertedIndex::Add(const Disjunction& disjunction, int docid, bool is_incremental) {
     size_t conj_size = get_dnf_size(disjunction);
     IndexerManager& manager = itable_[conj_size];
-    manager.Add(disjunction, docid);
+    manager.Add(disjunction, docid, is_incremental);
     return true;
 }
 

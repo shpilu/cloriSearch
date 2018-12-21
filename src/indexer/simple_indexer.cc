@@ -36,7 +36,7 @@ bool SimpleIndexer::ParseTermsFromConjValue(std::vector<Term>& terms, const Conj
     return true;
 }
 
-bool SimpleIndexer::Add(const ConjValue& value, bool is_belong_to, int docid) {
+bool SimpleIndexer::Add(const ConjValue& value, bool is_belong_to, int docid, bool is_incremental) {
     std::vector<Term> terms;
     this->ParseTermsFromConjValue(terms, value);
     for (auto& term : terms) {

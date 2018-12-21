@@ -92,8 +92,8 @@ cloriSearch目前只支持析取范式格式的倒排写入(具体proto定义参
             "name": "age",
             "value": {
                 "int32_intvl": [{
-                    "left": 20,
-                    "right": 30,
+                    "left": 18,
+                    "right": 25,
                     "flag": 3
                 }]
             }

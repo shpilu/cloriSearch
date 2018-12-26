@@ -151,7 +151,7 @@ for (auto &p : res) {
 
 ## 安装<div id="install"></div>
 
-cloriSearch使用C++开发，你可以按照以下方式安装
+cloriSearch对protobuf有依赖，在安装cloriSearch之前，必须先安装protobuf，之后你可以按照以下方式安装
 
 ```C++
 mkdir build && cd build
@@ -159,6 +159,15 @@ cmake ..
 make
 sudo make install
 ```
+同时cloriSearch的数据持久化功能默认是关闭的，如果有数据持久化需求，你需要先安装leveldb，然后执行
+
+```C++
+mkdir build && cd build
+cmake .. -DENABLE_PERSIST=1
+make
+sudo make install
+```
+
 也可以直接拷贝代码到你的项目中并加以改进，以适配你的业务需求。
 
 ## 待完成列表

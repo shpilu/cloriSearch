@@ -9,10 +9,25 @@
 
 namespace cloris {
 
-CloriSearch::CloriSearch() {
+CloriSearch::CloriSearch()
+    : enable_persistence_(false) 
+#ifdef ENABLE_PERSIST
+      , db_meta_(NULL),
+      db_inverted_list_(NULL) 
+#endif
+{
+
 }
 
 CloriSearch::~CloriSearch() {
+#ifdef ENABLE_PERSIST
+    if (db_meta_) {
+        delete db_meta_;
+    }
+    if (db_inverted_list_) {
+        delete db_inverted_list_;
+    }
+#endif
 }
 
 bool CloriSearch::Init(const std::string& source, IndexSchemaFormat format, SourceType source_type) {
@@ -43,6 +58,45 @@ bool CloriSearch::Init(const std::string& source, IndexSchemaFormat format, Sour
     return true;
 }
 
+bool CloriSearch::Init(const CloriSearchOptions& options) {
+    bool ok = this->Init(options.source, options.format, options.source_type);
+    if (ok) {
+        this->enable_persistence_ = options.enable_persistence;
+        this->meta_dir_ = options.meta_dir;
+        this->inverted_list_dir_ = options.inverted_list_dir;
+#ifdef ENABLE_PERSIT
+        if (this->enable_persistence_) {
+            leveldb::Options options;
+            options.create_if_missing = true;
+            leveldb::Status status = leveldb::DB::Open(options, this->meta_dir_, &this->db_meta_);
+            if (!status.ok()) {
+                return false;
+            }
+            status = leveldb::DB::Open(options, this->inverted_list_dir_, &this->db_inverted_list_);
+            return status.ok();
+        }
+#endif
+    }
+    return ok;
+}
+
+bool CloriSearch::PersistToDatabase(const DNF& dnf) {
+    bool ok = true;
+#ifdef ENABLE_PERSIT    
+    std::string proto_str;
+    if (dnf.SerializeToString(&proto_str)) {
+        status = this->db_inverted_list_->Put(leveldb::WriteOptions(), std::to_string(dnf.docid()), proto_str);
+        ok = status.ok();
+    } else {
+        cLog(ERROR, "[PERSISTENCE]dnf serialization failed");
+        ok = false;
+    }
+    delete db;
+    cLog(INFO, "[PERSISTENCE] success, docid=%d", dnf.docid());
+#endif
+    return ok; 
+}
+
 bool CloriSearch::Add(const std::string& source, IndexSchemaFormat format, bool is_incremental) {
     if (format != ISF_JSON) {
         cLog(ERROR, "unsupport format-style");
@@ -55,6 +109,10 @@ bool CloriSearch::Add(const std::string& source, IndexSchemaFormat format, bool 
         return false;
     }
     inverted_index()->Add(dnf, is_incremental);
+    // Data persistence
+    if (this->enable_persistence()) {
+        this->PersistToDatabase(dnf);
+    }
     return true;
 }
 

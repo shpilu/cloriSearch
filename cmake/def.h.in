@@ -2,5 +2,6 @@
 #define CLORIS_CLORISEARCH_DEF_H_ 
 
 #cmakedefine USE_DEBUG
+#cmakedefine ENABLE_PERSIST
 
 #endif // CLORIS_CLORISEARCH_DEF_H_ 

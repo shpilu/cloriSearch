@@ -10,7 +10,7 @@
 namespace cloris {
 
 CloriSearch::CloriSearch()
-    : enable_persistence_(false) 
+    : enable_persist_(false) 
 #ifdef ENABLE_PERSIST
       , db_meta_(NULL),
       db_inverted_list_(NULL) 
@@ -61,11 +61,11 @@ bool CloriSearch::Init(const std::string& source, IndexSchemaFormat format, Sour
 bool CloriSearch::Init(const CloriSearchOptions& options) {
     bool ok = this->Init(options.source, options.format, options.source_type);
     if (ok) {
-        this->enable_persistence_ = options.enable_persistence;
+        this->enable_persist_ = options.enable_persistence;
         this->meta_dir_ = options.meta_dir;
         this->inverted_list_dir_ = options.inverted_list_dir;
 #ifdef ENABLE_PERSIT
-        if (this->enable_persistence_) {
+        if (this->enable_persist_) {
             leveldb::Options options;
             options.create_if_missing = true;
             leveldb::Status status = leveldb::DB::Open(options, this->meta_dir_, &this->db_meta_);

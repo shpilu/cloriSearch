@@ -49,13 +49,13 @@ public:
 
     inline InvertedIndex* inverted_index() { return &iidx_; }
     inline ForwardIndex*  forward_index()  { return &fidx_; }
-    inline bool enable_persistence() const { return enable_persistence_; }
+    inline bool enable_persistence() const { return enable_persist_; }
     inline const std::string& meta_dir() const     { return meta_dir_; }
     inline const std::string& inverted_list_dir() const { return inverted_list_dir_; }
 private:
     InvertedIndex iidx_;
     ForwardIndex fidx_;
-    bool enable_persistence_;
+    bool enable_persist_;
     std::string meta_dir_;
     std::string inverted_list_dir_;
 #ifdef ENABLE_PERSIST    
